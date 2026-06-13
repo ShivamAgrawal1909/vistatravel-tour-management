@@ -1,0 +1,54 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import payment_status_badge %}
+{% from '_admin_macros.html' import btn_delete %}
+{% block title %}Payments{% endblock %}
+{% block page_title %}Payments ledger{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('admin.payment_new') }}"><i class="bi bi-plus-lg me-1"></i>Record payment</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item active">Payments</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card mb-3">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Search</h2></div>
+  <div class="admin-card-body">
+    <form class="row g-2 align-items-end" method="get">
+      <div class="col-md-3"><label class="form-label small mb-0">Booking ID</label><input class="form-control form-control-sm" name="booking" value="{{ request.args.get('booking','') }}" placeholder="Public reference"></div>
+      <div class="col-md-3"><label class="form-label small mb-0">Reference contains</label><input class="form-control form-control-sm" name="ref" value="{{ request.args.get('ref','') }}"></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Status</label><select class="form-select form-select-sm" name="status"><option value="">Any</option>{% for s in ['pending','paid','partial','failed'] %}<option value="{{ s }}" {% if request.args.get('status')==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+      <div class="col-md-2"><button type="submit" class="btn btn-tt-primary btn-sm w-100 rounded-pill">Apply</button></div>
+    </form>
+  </div>
+</div>
+<div class="admin-card">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Recent entries</h2><span class="small text-admin-muted">Up to 500 rows</span></div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>When</th><th>Booking</th><th>Amount</th><th>Mode</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for p in items %}
+            <tr>
+              <td class="small text-admin-muted">{{ p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else '—' }}</td>
+              <td>{% if p.booking %}<a href="{{ url_for('admin.booking_detail', bid=p.booking_id) }}">{{ p.booking.public_id }}</a>{% else %}—{% endif %}</td>
+              <td class="fw-semibold">₹{{ p.amount }}</td>
+              <td class="small">{{ p.mode }}</td>
+              <td>{{ payment_status_badge(p.status) }}</td>
+              <td class="text-end text-nowrap">
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.payment_edit', pid=p.id) }}">Edit</a>
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.payment_receipt', pid=p.id) }}" target="_blank" rel="noopener">Receipt</a>
+                {{ btn_delete(url_for('admin.payment_delete', pid=p.id), 'Delete this payment?') }}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="text-center text-admin-muted py-4">No payments.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

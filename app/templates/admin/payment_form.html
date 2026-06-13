@@ -1,0 +1,57 @@
+{% extends 'base_admin.html' %}
+{% block title %}New payment{% endblock %}
+{% block page_title %}Record payment{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('admin.payments') }}">← Payments</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.payments') }}">Payments</a></li>
+  <li class="breadcrumb-item active">New</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card col-lg-8">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Payment entry</h2><span class="small text-admin-muted">Links to a booking and optionally updates its payment status</span></div>
+  <div class="admin-card-body">
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Booking</label>
+        <select class="form-select" name="booking_id" required>
+          {% for b in bookings %}
+            <option value="{{ b.id }}" {% if booking_id == b.id %}selected{% endif %}>{{ b.public_id }} — {{ b.user.full_name if b.user else 'Guest' }} — {{ b.package.title if b.package else 'Package' }} · ₹{{ b.total_amount }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold">Amount (₹)</label>
+          <input class="form-control" type="number" step="0.01" name="amount" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold">Mode</label>
+          <select class="form-select" name="mode">{% for m in ['Cash','Bank Transfer','Card'] %}<option value="{{ m }}">{{ m }}</option>{% endfor %}</select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold">This payment status</label>
+          <select class="form-select" name="status">{% for s in ['paid','pending','partial','failed'] %}<option value="{{ s }}">{{ s }}</option>{% endfor %}</select>
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Reference / transaction ID</label>
+        <input class="form-control" name="reference_no" placeholder="UTR, receipt no., gateway id…">
+      </div>
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Internal notes</label>
+        <textarea class="form-control" name="notes" rows="2" placeholder="Optional memo for staff"></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="form-label small fw-semibold">Update booking payment status</label>
+        <select class="form-select" name="booking_payment_status">{% for s in ['pending','paid','partial','failed'] %}<option value="{{ s }}">{{ s }}</option>{% endfor %}</select>
+        <div class="form-text">Usually set to <strong>paid</strong> or <strong>partial</strong> when recording money.</div>
+      </div>
+      <button type="submit" class="btn btn-tt-primary rounded-pill px-4"><i class="bi bi-check2-circle me-2"></i>Save payment</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

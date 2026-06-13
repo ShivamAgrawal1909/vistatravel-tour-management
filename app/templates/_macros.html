@@ -1,0 +1,21 @@
+{% macro static_img(path) -%}
+  {%- if path -%}{{ url_for('static', filename=path) }}{%- endif -%}
+{%- endmacro %}
+
+{% macro booking_status_badge(status) -%}
+  {%- set s = (status or '')|lower -%}
+  {%- if s == 'confirmed' -%}<span class="tt-badge-status tt-bs-confirmed">Confirmed</span>
+  {%- elif s == 'cancelled' -%}<span class="tt-badge-status tt-bs-cancelled">Cancelled</span>
+  {%- elif s == 'completed' -%}<span class="tt-badge-status tt-bs-completed">Completed</span>
+  {%- else -%}<span class="tt-badge-status tt-bs-pending">Pending</span>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro payment_status_badge(status) -%}
+  {%- set s = (status or '')|lower -%}
+  {%- if s == 'paid' -%}<span class="tt-badge-status tt-pay-paid">Paid</span>
+  {%- elif s == 'partial' -%}<span class="tt-badge-status tt-pay-partial">Partial</span>
+  {%- elif s == 'failed' -%}<span class="tt-badge-status tt-pay-failed">Failed</span>
+  {%- else -%}<span class="tt-badge-status tt-pay-pending">Pending</span>
+  {%- endif -%}
+{%- endmacro %}

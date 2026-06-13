@@ -1,0 +1,14 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import static_img %}
+{% block title %}Profile{% endblock %}
+{% block page_title %}Admin profile{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card card-tt p-4 col-lg-8">
+  {% if admin.profile_image %}<img src="{{ static_img(admin.profile_image) }}" width="80" class="rounded-circle mb-2">{% endif %}
+  <input class="form-control mb-2" name="full_name" value="{{ admin.full_name or '' }}">
+  <input class="form-control mb-2" type="email" name="email" value="{{ admin.email }}">
+  <input class="form-control mb-2" type="file" name="profile_image">
+  <button class="btn btn-tt-primary">Save</button>
+  <a class="btn btn-link" href="{{ url_for('admin_auth.change_password') }}">Password</a>
+</form>
+{% endblock %}

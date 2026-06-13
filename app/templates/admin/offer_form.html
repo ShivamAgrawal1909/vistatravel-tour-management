@@ -1,0 +1,17 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Offer{% endblock %}
+{% block content %}
+<form method="post" class="card card-tt p-4 col-lg-8">
+  <input class="form-control mb-2" name="title" value="{{ offer.title if offer else '' }}" required>
+  <textarea class="form-control mb-2" name="description" rows="3">{{ offer.description if offer else '' }}</textarea>
+  <div class="row g-2">
+    <div class="col-md-4"><input class="form-control" type="number" step="0.01" name="discount_percent" placeholder="% off" value="{{ offer.discount_percent if offer else '' }}"></div>
+    <div class="col-md-4"><input class="form-control" type="number" step="0.01" name="discount_fixed" placeholder="Fixed ₹ off" value="{{ offer.discount_fixed if offer else '' }}"></div>
+    <div class="col-md-4"><select class="form-select" name="package_id"><option value="">Any package</option>{% for p in packages %}<option value="{{ p.id }}" {% if offer and offer.package_id==p.id %}selected{% endif %}>{{ p.title }}</option>{% endfor %}</select></div>
+    <div class="col-md-4"><input class="form-control" type="date" name="start_date" value="{{ offer.start_date.strftime('%Y-%m-%d') if offer and offer.start_date else '' }}"></div>
+    <div class="col-md-4"><input class="form-control" type="date" name="end_date" value="{{ offer.end_date.strftime('%Y-%m-%d') if offer and offer.end_date else '' }}"></div>
+    <div class="col-md-4 form-check mt-2"><input class="form-check-input" type="checkbox" name="is_active" {% if not offer or offer.is_active %}checked{% endif %}><label class="form-check-label">Active</label></div>
+  </div>
+  <button class="btn btn-tt-primary mt-3">Save</button>
+</form>
+{% endblock %}

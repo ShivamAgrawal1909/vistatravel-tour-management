@@ -1,0 +1,18 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Destination{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card card-tt p-4">
+  <div class="row g-2">
+    <div class="col-md-6"><input class="form-control" name="name" placeholder="Name" value="{{ destination.name if destination else '' }}" required></div>
+    <div class="col-md-3"><input class="form-control" name="state" placeholder="State" value="{{ destination.state if destination else '' }}"></div>
+    <div class="col-md-3"><input class="form-control" name="city" placeholder="City" value="{{ destination.city if destination else '' }}"></div>
+    <div class="col-12"><input class="form-control" name="short_description" placeholder="Short" value="{{ destination.short_description if destination else '' }}"></div>
+    <div class="col-12"><textarea class="form-control" name="full_description" rows="4">{{ destination.full_description if destination else '' }}</textarea></div>
+    <div class="col-md-6"><input class="form-control" name="best_season" placeholder="Best season" value="{{ destination.best_season if destination else '' }}"></div>
+    <div class="col-md-6"><input class="form-control" name="travel_duration_info" placeholder="Duration info" value="{{ destination.travel_duration_info if destination else '' }}"></div>
+    <div class="col-md-6"><select class="form-select" name="category_id"><option value="">Category</option>{% for c in categories %}<option value="{{ c.id }}" {% if destination and destination.category_id==c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-6"><input class="form-control" type="file" name="image"></div>
+  </div>
+  <button class="btn btn-tt-primary mt-3">Save</button>
+</form>
+{% endblock %}

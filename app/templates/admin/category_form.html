@@ -1,0 +1,10 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Category{% endblock %}
+{% block content %}
+<form method="post" class="card card-tt p-4 col-lg-7">
+  <input class="form-control mb-2" name="name" value="{{ category.name if category else '' }}" required>
+  <textarea class="form-control mb-2" name="description" rows="3">{{ category.description if category else '' }}</textarea>
+  <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="is_active" {% if not category or category.is_active %}checked{% endif %}><label class="form-check-label">Active</label></div>
+  <button class="btn btn-tt-primary">Save</button>
+</form>
+{% endblock %}

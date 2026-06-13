@@ -1,0 +1,15 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Destinations{% endblock %}
+{% block content %}
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-3"><input class="form-control" name="q" placeholder="Name" value="{{ request.args.get('q','') }}"></div>
+  <div class="col-md-3"><input class="form-control" name="state" placeholder="State" value="{{ request.args.get('state','') }}"></div>
+  <div class="col-md-3"><select class="form-select" name="category_id"><option value="">Category</option>{% for c in categories %}<option value="{{ c.id }}" {% if request.args.get('category_id') == c.id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+  <div class="col-md-2"><button class="btn btn-tt-primary w-100">Go</button></div>
+  <div class="col-md-1"><a class="btn btn-outline-primary w-100" href="{{ url_for('admin.destination_form') }}">Add</a></div>
+</form>
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>Name</th><th>State</th><th></th></tr></thead><tbody>
+{% for d in items %}<tr><td>{{ d.name }}</td><td>{{ d.state }}</td><td><a href="{{ url_for('admin.destination_form', did=d.id) }}">Edit</a>
+<form class="d-inline" method="post" action="{{ url_for('admin.destination_delete', did=d.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

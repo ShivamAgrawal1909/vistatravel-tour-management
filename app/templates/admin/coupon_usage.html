@@ -1,0 +1,7 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Coupon {{ coupon.code }}{% endblock %}
+{% block content %}
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>When</th><th>Booking</th></tr></thead><tbody>
+{% for r in rows %}<tr><td>{{ r.created_at }}</td><td>{{ r.booking_id }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

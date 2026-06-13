@@ -1,0 +1,14 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Slider{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card card-tt p-4 col-md-7">
+  <input class="form-control mb-2" name="headline" value="{{ slider.headline if slider else '' }}">
+  <input class="form-control mb-2" name="subheadline" value="{{ slider.subheadline if slider else '' }}">
+  <input class="form-control mb-2" name="link" placeholder="/packages" value="{{ slider.link if slider else '' }}">
+  <input class="form-control mb-2" type="number" name="sort_order" value="{{ slider.sort_order if slider else 0 }}">
+  <input class="form-control mb-2" type="file" name="image">
+  <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="is_active" {% if not slider or slider.is_active %}checked{% endif %}><label class="form-check-label">Active</label></div>
+  <button class="btn btn-tt-primary">Save</button>
+  <a class="btn btn-link" href="{{ url_for('admin.homepage') }}">Back</a>
+</form>
+{% endblock %}

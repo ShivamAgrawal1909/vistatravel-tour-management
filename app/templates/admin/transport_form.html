@@ -1,0 +1,14 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Transport{% endblock %}
+{% block content %}
+<form method="post" class="card card-tt p-4 col-lg-7">
+  <select class="form-select mb-2" name="transport_type">
+    {% for opt in ['Bus','Car','Train','Flight'] %}<option {% if transport and transport.transport_type==opt %}selected{% endif %}>{{ opt }}</option>{% endfor %}
+  </select>
+  <input class="form-control mb-2" name="vehicle_details" value="{{ transport.vehicle_details if transport else '' }}">
+  <input class="form-control mb-2" type="number" name="seat_capacity" value="{{ transport.seat_capacity if transport else 0 }}">
+  <input class="form-control mb-2" name="pickup_point" value="{{ transport.pickup_point if transport else '' }}">
+  <textarea class="form-control mb-2" name="description" rows="2">{{ transport.description if transport else '' }}</textarea>
+  <button class="btn btn-tt-primary">Save</button>
+</form>
+{% endblock %}

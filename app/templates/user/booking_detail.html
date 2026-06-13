@@ -1,0 +1,154 @@
+{% extends 'base_user.html' %}
+{% from '_macros.html' import static_img, booking_status_badge, payment_status_badge %}
+{% block title %}Booking {{ booking.public_id }} · VistaTravel{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item"><a href="{{ url_for('user.bookings') }}">Bookings</a></li>
+<li class="breadcrumb-item active" aria-current="page"><span class="tt-mono">{{ booking.public_id }}</span></li>
+{% endblock %}
+{% block user_page_header %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-2">
+  <div>
+    <h1 class="h3 fw-bold text-tt-navy mb-2">Booking <span class="tt-mono">{{ booking.public_id }}</span></h1>
+    <p class="text-muted mb-0">{{ booking.package.title if booking.package else 'Tour package' }}</p>
+  </div>
+  <div class="d-flex flex-wrap gap-2 align-items-center">
+    {{ booking_status_badge(booking.status) }}
+    {{ payment_status_badge(booking.payment_status) }}
+  </div>
+</div>
+{% endblock %}
+{% block user_body %}
+<div class="row g-4">
+  <div class="col-xl-8">
+    <div class="tt-panel mb-4">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Trip &amp; billing summary</h2>
+        <span class="small text-muted">Issued {% if booking.created_at %}{{ booking.created_at.strftime('%d %b %Y, %H:%M') }}{% endif %}</span>
+      </div>
+      <div class="tt-panel-body">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <dl class="tt-dl mb-0">
+              <dt>Travel date</dt>
+              <dd>{% if booking.travel_slot %}<strong>{{ booking.travel_slot.travel_date.strftime('%A, %d %B %Y') }}</strong>{% else %}<span class="text-muted">To be assigned</span>{% endif %}</dd>
+              <dt>Travellers</dt>
+              <dd>{{ booking.travellers_count }} guest{% if booking.travellers_count != 1 %}s{% endif %}</dd>
+              <dt>Package total</dt>
+              <dd class="fs-5 fw-bold text-tt-navy">₹ {{ '%.2f'|format(booking.total_amount|float) }}</dd>
+            </dl>
+          </div>
+          <div class="col-md-6">
+            <dl class="tt-dl mb-0">
+              <dt>Amount recorded as paid</dt>
+              <dd class="text-success fw-semibold">₹ {{ '%.2f'|format(total_paid) }}</dd>
+              <dt>Balance due</dt>
+              <dd class="{% if balance > 0 %}text-danger fw-bold{% else %}text-success{% endif %}">₹ {{ '%.2f'|format(balance) }}</dd>
+              {% if booking.coupon_code %}
+                <dt>Coupon applied</dt>
+                <dd><span class="badge bg-light text-dark border tt-mono">{{ booking.coupon_code }}</span></dd>
+              {% endif %}
+            </dl>
+          </div>
+        </div>
+        {% if booking.special_request %}
+          <div class="alert alert-light border mt-3 mb-0 small">
+            <strong><i class="bi bi-chat-left-text me-1"></i>Your note:</strong> {{ booking.special_request }}
+          </div>
+        {% endif %}
+        {% if booking.admin_remarks %}
+          <div class="alert alert-info border-0 mt-3 mb-0 small">
+            <strong><i class="bi bi-info-circle me-1"></i>From our team:</strong> {{ booking.admin_remarks }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="tt-panel mb-4">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Traveller manifest</h2>
+        <span class="small text-muted">As submitted at booking</span>
+      </div>
+      <div class="tt-panel-body p-0">
+        {% if travellers %}
+          <div class="table-responsive">
+            <table class="table tt-data-table mb-0">
+              <thead><tr><th>#</th><th>Name</th><th>Age</th><th>Gender</th><th>Contact</th><th>ID reference</th></tr></thead>
+              <tbody>
+                {% for t in travellers %}
+                  <tr>
+                    <td class="text-muted small">{{ loop.index }}</td>
+                    <td class="fw-semibold">{{ t.name or '—' }}</td>
+                    <td>{{ t.age if t.age is not none else '—' }}</td>
+                    <td>{{ t.gender or '—' }}</td>
+                    <td class="small">{{ t.contact or '—' }}</td>
+                    <td class="small tt-mono">{{ t.id_proof or '—' }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted small mb-0 p-3">No traveller lines stored for this booking.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="tt-panel">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Payment history</h2>
+      </div>
+      <div class="table-responsive">
+        <table class="table tt-data-table mb-0">
+          <thead><tr><th>Date</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for p in payments %}
+              <tr>
+                <td class="small">{% if p.created_at %}{{ p.created_at.strftime('%d %b %Y %H:%M') }}{% else %}—{% endif %}</td>
+                <td class="fw-semibold">₹ {{ '%.2f'|format(p.amount|float) }}</td>
+                <td>{{ p.mode }}</td>
+                <td class="small tt-mono">{{ p.reference_no or '—' }}</td>
+                <td>{{ payment_status_badge(p.status) }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="text-center text-muted py-4">No payment entries yet. Submit transfer details so our finance desk can verify.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    {% if booking.package %}
+      <div class="tt-panel mb-4">
+        <div class="tt-panel-body">
+          <img src="{{ static_img(booking.package.main_image) or url_for('static', filename='img/placeholder.svg') }}" class="rounded-3 w-100 mb-3" alt="" style="max-height:160px;object-fit:cover">
+          <h3 class="h6 fw-bold">{{ booking.package.title }}</h3>
+          <p class="small text-muted mb-3">{{ booking.package.duration_days }}D / {{ booking.package.duration_nights }}N · {{ booking.package.destination.name if booking.package.destination else '' }}</p>
+          <a class="btn btn-outline-secondary btn-sm rounded-pill w-100 mb-2" href="{{ url_for('public.package_detail', pkg_id=booking.package.id) }}">Package details &amp; inclusions</a>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="tt-panel mb-4">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Actions</h2>
+      </div>
+      <div class="tt-panel-body d-grid gap-2">
+        <a class="btn btn-tt-primary rounded-pill" href="{{ url_for('user.booking_receipt', booking_id=booking.id) }}" target="_blank" rel="noopener"><i class="bi bi-printer me-1"></i>Print / save receipt</a>
+        {% if booking.status not in ['cancelled','completed'] %}
+          <a class="btn btn-outline-primary rounded-pill" href="{{ url_for('user.submit_payment', booking_id=booking.id) }}"><i class="bi bi-bank me-1"></i>Submit payment details</a>
+          <form method="post" action="{{ url_for('user.cancel_booking', booking_id=booking.id) }}" onsubmit="return confirm('Cancel this booking? Seats may be released back to inventory.');">
+            <button type="submit" class="btn btn-outline-danger rounded-pill w-100"><i class="bi bi-x-circle me-1"></i>Request cancellation</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="tt-help-card border-0 shadow-sm">
+      <h3 class="h6 fw-bold text-tt-navy"><i class="bi bi-lightbulb text-warning me-2"></i>How payments work</h3>
+      <p class="small text-muted mb-0">We do not charge cards online. After you submit bank transfer or cash details, our team marks the booking as paid. Keep your reference number handy.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

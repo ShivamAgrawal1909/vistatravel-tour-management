@@ -1,0 +1,45 @@
+{% extends 'base_admin.html' %}
+{% block title %}Users{% endblock %}
+{% block page_title %}Registered users{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item active">Users</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card mb-3">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Search</h2></div>
+  <div class="admin-card-body">
+    <form method="get" class="row g-2">
+      <div class="col-md-6 col-lg-4">
+        <label class="form-label small mb-0">Name, email, or mobile</label>
+        <input class="form-control" name="q" placeholder="Search…" value="{{ request.args.get('q','') }}">
+      </div>
+      <div class="col-auto d-flex align-items-end"><button type="submit" class="btn btn-tt-primary rounded-pill">Search</button></div>
+    </form>
+  </div>
+</div>
+<div class="admin-card">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Directory</h2></div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Status</th><th class="text-end">Open</th></tr></thead>
+        <tbody>
+          {% for u in items %}
+            <tr>
+              <td class="fw-semibold">{{ u.full_name }}</td>
+              <td class="small">{{ u.email }}</td>
+              <td class="small">{{ u.mobile or '—' }}</td>
+              <td>{% if u.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
+              <td class="text-end"><a class="btn btn-sm btn-outline-primary rounded-pill py-0" href="{{ url_for('admin.user_detail', uid=u.id) }}">Profile</a></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="text-center text-admin-muted py-4">No users match.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Coupons{% endblock %}
+{% block content %}
+<a class="btn btn-tt-primary mb-3" href="{{ url_for('admin.coupon_form') }}">New coupon</a>
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>Code</th><th>Type</th><th>Amount</th><th>Used</th><th></th></tr></thead><tbody>
+{% for c in items %}<tr><td>{{ c.code }}</td><td>{{ c.discount_type }}</td><td>{{ c.amount }}</td><td>{{ c.used_count }}/{{ c.usage_limit }}</td><td><a href="{{ url_for('admin.coupon_form', cid=c.id) }}">Edit</a>
+<a href="{{ url_for('admin.coupon_usage', cid=c.id) }}">Usage</a>
+<form class="d-inline" method="post" action="{{ url_for('admin.coupon_delete', cid=c.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form>
+</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

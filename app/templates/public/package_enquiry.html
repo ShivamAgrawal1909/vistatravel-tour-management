@@ -1,0 +1,34 @@
+{% extends 'base_public.html' %}
+{% block title %}Enquire · {{ package.title }} · VistaTravel{% endblock %}
+{% block content %}
+<section class="tt-page-hero py-4">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-2" style="--bs-breadcrumb-divider: '›';">
+        <li class="breadcrumb-item"><a href="{{ url_for('public.package_detail', pkg_id=package.id) }}" class="text-white-50 text-decoration-none">Package</a></li>
+        <li class="breadcrumb-item active text-white">Enquiry</li>
+      </ol>
+    </nav>
+    <h1 class="h2 fw-bold mb-2">Package enquiry</h1>
+    <p class="tt-page-hero-lead mb-0">{{ package.title }}</p>
+  </div>
+</section>
+<div class="container py-5 col-lg-8">
+  <div class="tt-panel border-0 shadow">
+    <div class="tt-panel-header">
+      <span class="fw-bold text-tt-navy">Message our consultants</span>
+    </div>
+    <div class="tt-panel-body">
+      <p class="small text-muted mb-4">Logged in as <strong>{{ user.full_name }}</strong> ({{ user.email }}). Replies appear under <a href="{{ url_for('user.enquiries') }}">Account → Enquiries</a>.</p>
+      <form method="post">
+        <label class="form-label small fw-semibold">Your question</label>
+        <textarea class="form-control" name="message" rows="6" required placeholder="Dates, private batch, child pricing, add-on nights, flight assistance — be as specific as you like."></textarea>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <button type="submit" class="btn btn-tt-primary rounded-pill px-4"><i class="bi bi-send me-2"></i>Submit enquiry</button>
+          <a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('public.package_detail', pkg_id=package.id) }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

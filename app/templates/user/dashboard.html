@@ -1,0 +1,122 @@
+{% extends 'base_user.html' %}
+{% from '_macros.html' import static_img, booking_status_badge, payment_status_badge %}
+{% block title %}Account overview · VistaTravel{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item active" aria-current="page">Overview</li>
+{% endblock %}
+{% block user_page_header %}
+<div class="mb-4">
+  <h1 class="h3 fw-bold text-tt-navy mb-1">Welcome back, {{ (user.full_name or 'Traveller').split()[0] }}</h1>
+  <p class="text-muted mb-0">Track bookings, payments, and saved trips in one place. Reference: <span class="tt-mono">{{ user.email }}</span></p>
+</div>
+{% endblock %}
+{% block user_body %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="tt-stat-tile">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-stat-label">Total bookings</span>
+        <span class="tt-stat-icon"><i class="bi bi-calendar2-check"></i></span>
+      </div>
+      <div class="tt-stat-value text-tt-navy">{{ stats.bookings_total }}</div>
+      <a class="small fw-semibold text-tt-teal text-decoration-none" href="{{ url_for('user.bookings') }}">View history →</a>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="tt-stat-tile">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-stat-label">Wishlist</span>
+        <span class="tt-stat-icon"><i class="bi bi-heart"></i></span>
+      </div>
+      <div class="tt-stat-value text-tt-navy">{{ stats.wishlist }}</div>
+      <a class="small fw-semibold text-tt-teal text-decoration-none" href="{{ url_for('user.wishlist') }}">Saved packages →</a>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="tt-stat-tile">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-stat-label">Open enquiries</span>
+        <span class="tt-stat-icon"><i class="bi bi-chat-square-text"></i></span>
+      </div>
+      <div class="tt-stat-value text-tt-navy">{{ stats.enquiries_open }}</div>
+      <a class="small fw-semibold text-tt-teal text-decoration-none" href="{{ url_for('user.enquiries') }}">Messages →</a>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="tt-stat-tile">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="tt-stat-label">Payment follow-up</span>
+        <span class="tt-stat-icon"><i class="bi bi-credit-card"></i></span>
+      </div>
+      <div class="tt-stat-value text-tt-navy">{{ stats.pending_payment }}</div>
+      <span class="small text-muted">Bookings awaiting verification</span>
+    </div>
+  </div>
+</div>
+
+{% if upcoming %}
+<div class="tt-panel mb-4">
+  <div class="tt-panel-header">
+    <div>
+      <h2 class="h6 fw-bold text-tt-navy mb-0"><i class="bi bi-pin-map-fill text-tt-teal me-2"></i>Next departure</h2>
+      <p class="small text-muted mb-0 mt-1">Your nearest confirmed or pending trip with a scheduled date.</p>
+    </div>
+    <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('user.booking_detail', booking_id=upcoming.id) }}">Open booking</a>
+  </div>
+  <div class="tt-panel-body">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-2 text-center">
+        {% if upcoming.package and upcoming.package.main_image %}
+          <img src="{{ static_img(upcoming.package.main_image) }}" class="rounded-3 img-fluid shadow-sm" alt="" style="max-height:100px;object-fit:cover;width:100%">
+        {% else %}
+          <div class="rounded-3 bg-light d-flex align-items-center justify-content-center" style="height:100px"><i class="bi bi-image text-muted fs-3"></i></div>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <h3 class="h6 fw-bold mb-1">{{ upcoming.package.title if upcoming.package else 'Package' }}</h3>
+        <p class="small text-muted mb-0">
+          <i class="bi bi-calendar-event me-1"></i>
+          {% if upcoming.travel_slot %}Travel date: <strong>{{ upcoming.travel_slot.travel_date.strftime('%d %b %Y') }}</strong>{% else %}Date TBC{% endif %}
+          · {{ upcoming.travellers_count }} traveller{% if upcoming.travellers_count != 1 %}s{% endif %}
+        </p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        {{ booking_status_badge(upcoming.status) }}
+        <div class="small mt-2">{{ payment_status_badge(upcoming.payment_status) }}</div>
+        <div class="fw-bold text-tt-navy mt-1">₹ {{ '%.2f'|format(upcoming.total_amount|float) }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="tt-panel">
+  <div class="tt-panel-header">
+    <h2 class="h6 fw-bold text-tt-navy mb-0">Recent bookings</h2>
+    <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('user.bookings') }}">All bookings</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table tt-data-table mb-0 align-middle">
+      <thead><tr><th>Reference</th><th>Package</th><th>Booked</th><th>Trip</th><th>Status</th><th>Payment</th><th></th></tr></thead>
+      <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td><span class="tt-mono fw-semibold">{{ b.public_id }}</span></td>
+            <td class="text-truncate" style="max-width:200px">{{ b.package.title if b.package else '—' }}</td>
+            <td class="small text-muted">{% if b.created_at %}{{ b.created_at.strftime('%d %b %Y') }}{% else %}—{% endif %}</td>
+            <td class="small">{% if b.travel_slot %}{{ b.travel_slot.travel_date.strftime('%d %b %Y') }}{% else %}—{% endif %}</td>
+            <td>{{ booking_status_badge(b.status) }}</td>
+            <td>{{ payment_status_badge(b.payment_status) }}</td>
+            <td><a class="btn btn-sm btn-outline-primary rounded-pill py-0" href="{{ url_for('user.booking_detail', booking_id=b.id) }}">Details</a></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" class="text-center py-5 text-muted">
+            <i class="bi bi-suitcase2 d-block fs-2 mb-2 opacity-50"></i>
+            No bookings yet. <a href="{{ url_for('public.packages_list') }}">Browse packages</a> to plan your first trip.
+          </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

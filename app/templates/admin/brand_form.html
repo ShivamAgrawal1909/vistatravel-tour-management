@@ -1,0 +1,12 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}{% if brand %}Edit{% else %}New{% endif %} brand{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card card-tt p-4 col-lg-8">
+  <input class="form-control mb-2" name="name" value="{{ brand.name if brand else '' }}" required>
+  <textarea class="form-control mb-2" name="description" rows="3">{{ brand.description if brand else '' }}</textarea>
+  <input class="form-control mb-2" type="file" name="logo">
+  <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="is_active" {% if not brand or brand.is_active %}checked{% endif %}><label class="form-check-label">Active</label></div>
+  <button class="btn btn-tt-primary">Save</button>
+  <a class="btn btn-link" href="{{ url_for('admin.brands') }}">Back</a>
+</form>
+{% endblock %}

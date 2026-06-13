@@ -1,0 +1,38 @@
+{% extends 'base_public.html' %}
+{% block content %}
+<div class="tt-user-page">
+  <div class="container py-4 py-lg-5">
+    {% block user_breadcrumbs %}
+    <nav aria-label="breadcrumb" class="tt-breadcrumb mb-3 mb-lg-4">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{{ url_for('public.home') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('user.dashboard') }}">Account</a></li>
+        {% block user_bc_extra %}{% endblock %}
+      </ol>
+    </nav>
+    {% endblock %}
+    <div class="row g-4 align-items-start">
+      <aside class="col-lg-4 col-xl-3">
+        {% include '_user_sidebar.html' %}
+        <div class="card-tt border-0 mt-3 p-3 d-none d-lg-block tt-help-card">
+          <h6 class="fw-bold text-tt-navy mb-2"><i class="bi bi-headset me-2 text-tt-teal"></i>Need help?</h6>
+          <p class="small text-muted mb-2">Questions about payments, dates, or documents? Our team reviews every booking.</p>
+          <a class="small fw-semibold" href="{{ url_for('public.contact') }}">Contact support →</a>
+        </div>
+      </aside>
+      <div class="col-lg-8 col-xl-9">
+        <div class="d-lg-none mb-3 overflow-x-auto pb-1">
+          <div class="d-flex gap-2 flex-nowrap">
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap {% if request.endpoint == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}">Overview</a>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap {% if request.endpoint == 'user.bookings' %}active{% endif %}" href="{{ url_for('user.bookings') }}">Bookings</a>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap {% if request.endpoint == 'user.wishlist' %}active{% endif %}" href="{{ url_for('user.wishlist') }}">Wishlist</a>
+            <a class="btn btn-sm btn-outline-secondary rounded-pill text-nowrap {% if request.endpoint == 'user.profile' %}active{% endif %}" href="{{ url_for('user.profile') }}">Profile</a>
+          </div>
+        </div>
+        {% block user_page_header %}{% endblock %}
+        {% block user_body %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

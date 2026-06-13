@@ -1,0 +1,14 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import static_img %}
+{% block page_title %}Package detail{% endblock %}
+{% block content %}
+<div class="card card-tt p-4">
+  <h4>{{ package.title }}</h4>
+  <p class="text-muted">{{ package.brand.name if package.brand }} · {{ package.category.name if package.category }}</p>
+  {% if package.main_image %}<img src="{{ static_img(package.main_image) }}" class="img-fluid rounded mb-3" style="max-height:320px">{% endif %}
+  <p>₹ {{ package.price }} {% if package.discount_price %} / deal ₹ {{ package.discount_price }}{% endif %}</p>
+  <a class="btn btn-sm btn-tt-primary" href="{{ url_for('admin.package_form', pid=package.id) }}">Edit</a>
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('admin.package_dates', pid=package.id) }}">Dates</a>
+  <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('public.package_detail', pkg_id=package.id) }}" target="_blank">Public view</a>
+</div>
+{% endblock %}

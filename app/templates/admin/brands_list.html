@@ -1,0 +1,48 @@
+{% extends 'base_admin.html' %}
+{% from '_admin_macros.html' import btn_delete %}
+{% block title %}Brands{% endblock %}
+{% block page_title %}Partner brands{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('admin.brand_form') }}"><i class="bi bi-plus-lg me-1"></i>Add brand</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item active">Brands</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card mb-3">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Filters</h2></div>
+  <div class="admin-card-body">
+    <form class="row g-2 align-items-end" method="get">
+      <div class="col-md-4"><label class="form-label small mb-0">Keyword</label><input class="form-control form-control-sm" name="q" value="{{ request.args.get('q','') }}" placeholder="Name"></div>
+      <div class="col-md-3"><label class="form-label small mb-0">Status</label><select class="form-select form-select-sm" name="status"><option value="">Any</option><option value="active" {% if request.args.get('status')=='active' %}selected{% endif %}>Active</option><option value="inactive" {% if request.args.get('status')=='inactive' %}selected{% endif %}>Inactive</option></select></div>
+      <div class="col-md-2"><button type="submit" class="btn btn-tt-primary btn-sm w-100 rounded-pill">Filter</button></div>
+    </form>
+  </div>
+</div>
+<div class="admin-card">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Brands</h2></div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>Name</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for b in items %}
+            <tr>
+              <td class="fw-semibold">{{ b.name }}</td>
+              <td>{% if b.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Inactive</span>{% endif %}</td>
+              <td class="text-end text-nowrap">
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.brand_form', bid=b.id) }}">Edit</a>
+                {{ btn_delete(url_for('admin.brand_delete', bid=b.id), 'Delete this brand?') }}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3" class="text-center text-admin-muted py-4">No brands.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

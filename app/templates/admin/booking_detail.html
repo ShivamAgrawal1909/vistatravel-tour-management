@@ -1,0 +1,123 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import booking_status_badge, payment_status_badge %}
+{% from '_admin_macros.html' import btn_delete %}
+{% block title %}Booking {{ booking.public_id }}{% endblock %}
+{% block page_title %}Booking {{ booking.public_id }}{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-outline-primary rounded-pill" href="{{ url_for('admin.bookings') }}">← All bookings</a>
+  <a class="btn btn-sm btn-outline-secondary rounded-pill" target="_blank" rel="noopener" href="{{ url_for('admin.booking_receipt', bid=booking.id) }}"><i class="bi bi-receipt me-1"></i>Receipt</a>
+  <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('admin.payment_new', booking_id=booking.id) }}"><i class="bi bi-cash-coin me-1"></i>Record payment</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.bookings') }}">Bookings</a></li>
+  <li class="breadcrumb-item active">{{ booking.public_id }}</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-lg-4">
+    <div class="admin-card h-100">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Snapshot</h2></div>
+      <div class="admin-card-body small">
+        <dl class="row mb-0 gy-2">
+          <dt class="col-5 text-admin-muted">Created</dt><dd class="col-7">{{ booking.created_at.strftime('%Y-%m-%d %H:%M') if booking.created_at else '—' }}</dd>
+          <dt class="col-5 text-admin-muted">Customer</dt><dd class="col-7">{% if booking.user %}<a href="{{ url_for('admin.user_detail', uid=booking.user_id) }}">{{ booking.user.full_name }}</a><br><span class="text-admin-muted">{{ booking.user.email }}</span>{% else %}—{% endif %}</dd>
+          <dt class="col-5 text-admin-muted">Package</dt><dd class="col-7">{% if booking.package %}<a href="{{ url_for('admin.package_form', pid=booking.package_id) }}">{{ booking.package.title }}</a>{% else %}—{% endif %}</dd>
+          <dt class="col-5 text-admin-muted">Travellers</dt><dd class="col-7">{{ booking.travellers_count }}</dd>
+          <dt class="col-5 text-admin-muted">Coupon</dt><dd class="col-7">{{ booking.coupon_code or '—' }}</dd>
+          <dt class="col-5 text-admin-muted">Special request</dt><dd class="col-7 text-break">{{ booking.special_request or '—' }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="admin-card h-100 border-start border-4 {% if balance > 0 %}border-warning{% elif balance < 0 %}border-danger{% else %}border-success{% endif %}">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Financials</h2></div>
+      <div class="admin-card-body">
+        <div class="d-flex justify-content-between align-items-baseline mb-2">
+          <span class="text-admin-muted small">Booking total</span>
+          <span class="fw-bold fs-5">₹{{ '%.2f'|format(booking.total_amount|float) }}</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-baseline mb-2">
+          <span class="text-admin-muted small">Recorded payments</span>
+          <span class="fw-semibold text-success">₹{{ '%.2f'|format(total_paid) }}</span>
+        </div>
+        <div class="d-flex justify-content-between align-items-baseline pt-2 border-top">
+          <span class="fw-semibold">Balance due</span>
+          <span class="fw-bold {% if balance > 0 %}text-warning{% elif balance < 0 %}text-danger{% else %}text-success{% endif %}">₹{{ '%.2f'|format(balance) }}</span>
+        </div>
+        <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+          <span class="small text-admin-muted me-1">Booking status</span>{{ booking_status_badge(booking.status) }}
+          <span class="small text-admin-muted ms-2 me-1">Payment</span>{{ payment_status_badge(booking.payment_status) }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="admin-card h-100">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Update booking</h2><span class="small text-admin-muted">Status, slot, totals</span></div>
+      <div class="admin-card-body">
+        <form method="post">
+          <div class="mb-2"><label class="form-label small fw-semibold">Booking status</label><select class="form-select form-select-sm" name="status">{% for s in ['pending','confirmed','cancelled','completed'] %}<option value="{{ s }}" {% if booking.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+          <div class="mb-2"><label class="form-label small fw-semibold">Payment status</label><select class="form-select form-select-sm" name="payment_status">{% for s in ['pending','paid','partial','failed'] %}<option value="{{ s }}" {% if booking.payment_status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+          <div class="mb-2"><label class="form-label small fw-semibold">Travel date slot</label><select class="form-select form-select-sm" name="package_date_id">{% for d in package_dates %}<option value="{{ d.id }}" {% if booking.package_date_id==d.id %}selected{% endif %}>{{ d.travel_date }}{% if d.booking_closed %} · closed{% endif %} · {{ d.seats_available }} seats</option>{% else %}<option value="">No dates configured</option>{% endfor %}</select></div>
+          <div class="mb-2"><label class="form-label small fw-semibold">Total amount (₹)</label><input class="form-control form-control-sm" type="number" step="0.01" name="total_amount" value="{{ booking.total_amount }}"></div>
+          <div class="mb-3"><label class="form-label small fw-semibold">Internal remarks</label><textarea class="form-control form-control-sm" name="admin_remarks" rows="2" placeholder="Visible only to staff">{{ booking.admin_remarks or '' }}</textarea></div>
+          <button type="submit" class="btn btn-tt-primary btn-sm rounded-pill"><i class="bi bi-check2 me-1"></i>Save changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="admin-card mb-4">
+  <div class="admin-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div><h2 class="h6 mb-0">Payments</h2><span class="small text-admin-muted">Ledger for this booking</span></div>
+    <a class="btn btn-sm btn-outline-primary rounded-pill" href="{{ url_for('admin.payment_new', booking_id=booking.id) }}">+ Add payment</a>
+  </div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>When</th><th>Amount</th><th>Mode</th><th>Reference</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for p in payments %}
+            <tr>
+              <td class="small text-admin-muted">{{ p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else '—' }}</td>
+              <td class="fw-semibold">₹{{ '%.2f'|format(p.amount|float) }}</td>
+              <td>{{ p.mode }}</td>
+              <td class="small">{{ p.reference_no or '—' }}</td>
+              <td>{{ payment_status_badge(p.status) }}</td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.payment_edit', pid=p.id) }}">Edit</a>
+                {{ btn_delete(url_for('admin.payment_delete', pid=p.id), 'Delete this payment row?') }}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="text-center text-admin-muted py-4">No payments recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="admin-card mb-4">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Traveller manifest</h2><span class="small text-admin-muted">Save replaces all rows below</span></div>
+  <div class="admin-card-body">
+    <form method="post" action="{{ url_for('admin.booking_travellers_update', bid=booking.id) }}">
+      {% set rows = travellers if travellers|length > 0 else [None, None, None] %}
+      {% for t in rows %}
+        <div class="row g-2 mb-3 pb-3 border-bottom border-light">
+          <div class="col-md-4"><label class="form-label small text-admin-muted mb-0">Full name</label><input class="form-control form-control-sm" name="t_name" value="{{ t.name if t else '' }}" placeholder="Name"></div>
+          <div class="col-md-2"><label class="form-label small text-admin-muted mb-0">Age</label><input class="form-control form-control-sm" name="t_age" value="{{ t.age if t and t.age is not none else '' }}" placeholder="Age"></div>
+          <div class="col-md-2"><label class="form-label small text-admin-muted mb-0">Gender</label><input class="form-control form-control-sm" name="t_gender" value="{{ t.gender if t else '' }}"></div>
+          <div class="col-md-4"><label class="form-label small text-admin-muted mb-0">Contact</label><input class="form-control form-control-sm" name="t_contact" value="{{ t.contact if t else '' }}"></div>
+          <div class="col-12"><label class="form-label small text-admin-muted mb-0">ID proof</label><input class="form-control form-control-sm" name="t_proof" value="{{ t.id_proof if t else '' }}" placeholder="Passport / Aadhaar / etc."></div>
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-tt-primary btn-sm rounded-pill"><i class="bi bi-people me-1"></i>Save travellers</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

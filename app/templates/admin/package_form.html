@@ -1,0 +1,146 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import static_img %}
+{% from '_admin_macros.html' import btn_delete %}
+{% block title %}{% if package %}Edit{% else %}New{% endif %} package{% endblock %}
+{% block page_title %}{% if package %}Edit tour package{% else %}Create tour package{% endif %}{% endblock %}
+{% block admin_toolbar %}
+  {% if package %}
+    <a class="btn btn-sm btn-outline-primary rounded-pill" href="{{ url_for('admin.package_detail_admin', pid=package.id) }}"><i class="bi bi-eye me-1"></i>Preview</a>
+    <a class="btn btn-sm btn-outline-primary rounded-pill" href="{{ url_for('admin.package_dates', pid=package.id) }}"><i class="bi bi-calendar3 me-1"></i>Dates</a>
+    <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('public.package_detail', pkg_id=package.id) }}" target="_blank" rel="noopener">Live site</a>
+  {% endif %}
+  <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('admin.packages') }}">← List</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.packages') }}">Packages</a></li>
+  <li class="breadcrumb-item active">{% if package %}Edit{% else %}New{% endif %}</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" id="packageMainForm">
+  <div class="admin-card">
+    <div class="admin-card-header"><h2 class="h6 mb-0">Core mapping</h2><span class="small text-admin-muted">Brand, category, destination</span></div>
+    <div class="admin-card-body row g-3">
+      <div class="col-12">
+        <label class="form-label small fw-semibold">Package title</label>
+        <input class="form-control form-control-lg" name="title" value="{{ package.title if package else '' }}" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Brand</label>
+        <select class="form-select" name="brand_id" required>{% for b in brands %}<option value="{{ b.id }}" {% if package and package.brand_id==b.id %}selected{% endif %}>{{ b.name }}</option>{% endfor %}</select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Category</label>
+        <select class="form-select" name="category_id" required>{% for c in categories %}<option value="{{ c.id }}" {% if package and package.category_id==c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Destination</label>
+        <select class="form-select" name="destination_id" required>{% for d in destinations %}<option value="{{ d.id }}" {% if package and package.destination_id==d.id %}selected{% endif %}>{{ d.name }}</option>{% endfor %}</select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small fw-semibold">Hotel (master record)</label>
+        <select class="form-select" name="hotel_id"><option value="">— None —</option>{% for h in hotels %}<option value="{{ h.id }}" {% if package and package.hotel_id==h.id %}selected{% endif %}>{{ h.name }}</option>{% endfor %}</select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small fw-semibold">Transport (master record)</label>
+        <select class="form-select" name="transport_id"><option value="">— None —</option>{% for t in transports %}<option value="{{ t.id }}" {% if package and package.transport_id==t.id %}selected{% endif %}>{{ t.transport_type }} · {{ t.vehicle_details or '' }}</option>{% endfor %}</select>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h2 class="h6 mb-0">Pricing &amp; capacity</h2></div>
+    <div class="admin-card-body row g-3">
+      <div class="col-md-3"><label class="form-label small fw-semibold">Price (₹)</label><input class="form-control" type="number" step="0.01" name="price" value="{{ package.price if package else '' }}" required></div>
+      <div class="col-md-3"><label class="form-label small fw-semibold">Discount price</label><input class="form-control" type="number" step="0.01" name="discount_price" value="{{ package.discount_price if package else '' }}"></div>
+      <div class="col-md-2"><label class="form-label small fw-semibold">Days</label><input class="form-control" type="number" name="duration_days" value="{{ package.duration_days if package else 1 }}"></div>
+      <div class="col-md-2"><label class="form-label small fw-semibold">Nights</label><input class="form-control" type="number" name="duration_nights" value="{{ package.duration_nights if package else 0 }}"></div>
+      <div class="col-md-2"><label class="form-label small fw-semibold">Max guests</label><input class="form-control" type="number" name="max_persons" value="{{ package.max_persons if package else 10 }}"></div>
+      <div class="col-md-6"><label class="form-label small fw-semibold">Start point</label><input class="form-control" name="start_point" value="{{ package.start_point if package else '' }}"></div>
+      <div class="col-md-6"><label class="form-label small fw-semibold">End point</label><input class="form-control" name="end_point" value="{{ package.end_point if package else '' }}"></div>
+      <div class="col-md-4">
+        <label class="form-label small fw-semibold">Status</label>
+        <select class="form-select" name="status">
+          <option value="available" {% if package and package.status=='available' %}selected{% endif %}>available</option>
+          <option value="unavailable" {% if package and package.status=='unavailable' %}selected{% endif %}>unavailable</option>
+        </select>
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="is_featured" id="feat" {% if package and package.is_featured %}checked{% endif %}><label class="form-check-label fw-semibold" for="feat">Featured on site</label></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h2 class="h6 mb-0">Copy &amp; policy</h2></div>
+    <div class="admin-card-body row g-3">
+      <div class="col-12"><label class="form-label small fw-semibold">Hotel / stay narrative</label><textarea class="form-control" name="hotel_details_text" rows="2">{{ package.hotel_details_text if package else '' }}</textarea></div>
+      <div class="col-md-6"><label class="form-label small fw-semibold">Meals</label><textarea class="form-control" name="meal_details" rows="2">{{ package.meal_details if package else '' }}</textarea></div>
+      <div class="col-md-6"><label class="form-label small fw-semibold">Transport narrative</label><textarea class="form-control" name="transport_details_text" rows="2">{{ package.transport_details_text if package else '' }}</textarea></div>
+      <div class="col-md-6"><label class="form-label small fw-semibold">Inclusions</label><textarea class="form-control" name="inclusions" rows="4">{{ package.inclusions if package else '' }}</textarea></div>
+      <div class="col-md-6"><label class="form-label small fw-semibold">Exclusions</label><textarea class="form-control" name="exclusions" rows="4">{{ package.exclusions if package else '' }}</textarea></div>
+      <div class="col-12"><label class="form-label small fw-semibold">Terms &amp; conditions</label><textarea class="form-control" name="terms" rows="3">{{ package.terms if package else '' }}</textarea></div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h2 class="h6 mb-0">Upload new media</h2></div>
+    <div class="admin-card-body row g-3">
+      <div class="col-md-6">
+        <label class="form-label small fw-semibold">Main image (replace)</label>
+        <input class="form-control" type="file" name="main_image" accept="image/*">
+        {% if package and package.main_image %}<div class="mt-2"><img src="{{ static_img(package.main_image) }}" alt="" class="rounded-3 border" style="max-height:120px"></div>{% endif %}
+      </div>
+      <div class="col-md-6">
+        <label class="form-label small fw-semibold">Gallery (append multiple)</label>
+        <input class="form-control" type="file" name="gallery" multiple accept="image/*">
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header"><h2 class="h6 mb-0">Day-wise itinerary</h2></div>
+    <div class="admin-card-body">
+      {% set rows = itinerary if itinerary and itinerary|length > 0 else [{},{},{},{},{}] %}
+      {% for row in rows %}
+        <div class="row g-2 mb-2 align-items-end">
+          <div class="col-1"><label class="form-label small text-muted mb-0">Day</label><input class="form-control" name="it_day" value="{{ row.day or '' }}"></div>
+          <div class="col-3"><label class="form-label small text-muted mb-0">Title</label><input class="form-control" name="it_title" value="{{ row.title or '' }}"></div>
+          <div class="col-8"><label class="form-label small text-muted mb-0">Description</label><input class="form-control" name="it_desc" value="{{ row.description or '' }}"></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <button type="submit" class="btn btn-tt-primary btn-lg rounded-pill px-4"><i class="bi bi-check2-circle me-2"></i>Save package</button>
+  </div>
+</form>
+
+{% if package and package.images.first() %}
+<div class="admin-card mb-4">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Gallery — delete images</h2><span class="small text-admin-muted">Each action is immediate</span></div>
+  <div class="admin-card-body">
+    <div class="row g-3">
+      {% for im in package.images %}
+        <div class="col-6 col-md-3 col-lg-2 text-center">
+          <img src="{{ static_img(im.image_path) }}" class="rounded-3 border w-100 mb-2" style="height:90px;object-fit:cover" alt="">
+          {{ btn_delete(url_for('admin.package_image_delete', iid=im.id), 'Remove this gallery image?') }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if package %}
+<div class="admin-card border-danger border-opacity-25 mb-5">
+  <div class="admin-card-header bg-danger bg-opacity-10"><h2 class="h6 mb-0 text-danger">Danger zone</h2></div>
+  <div class="admin-card-body">
+    <p class="small text-admin-muted mb-2">Deleting removes package dates and images from the database (bookings may block if FK enforced — test in your DB).</p>
+    {{ btn_delete(url_for('admin.package_delete', pid=package.id), 'Permanently delete this package?') }}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

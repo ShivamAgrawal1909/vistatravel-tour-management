@@ -1,0 +1,39 @@
+{% extends 'base_admin.html' %}
+{% block title %}New static page{% endblock %}
+{% block page_title %}Create static page{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('admin.static_pages') }}">← All pages</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.static_pages') }}">Static pages</a></li>
+  <li class="breadcrumb-item active">New</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Page details</h2><span class="small text-admin-muted">Slug becomes the URL segment (e.g. <code>about</code> → /page/about)</span></div>
+  <div class="admin-card-body">
+    <form method="post">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label small fw-semibold">URL slug</label>
+          <input class="form-control" name="slug" required placeholder="about, faq, terms" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" title="Lowercase letters, numbers, hyphens">
+          <div class="form-text">Lowercase, no spaces. Use hyphens between words.</div>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label small fw-semibold">Page title</label>
+          <input class="form-control" name="title" required placeholder="About us">
+        </div>
+        <div class="col-12">
+          <label class="form-label small fw-semibold">HTML content</label>
+          <textarea class="form-control font-monospace small" name="content" rows="18" placeholder="<p>Your HTML here…</p>"><p></p></textarea>
+        </div>
+      </div>
+      <div class="mt-4 d-flex flex-wrap gap-2">
+        <button type="submit" class="btn btn-tt-primary rounded-pill px-4"><i class="bi bi-plus-circle me-2"></i>Create page</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Tour & Travel{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/theme.css') }}" rel="stylesheet">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<div class="tt-topbar d-none d-md-block">
+  <div class="container d-flex flex-wrap justify-content-between align-items-center py-2 small">
+    <div class="d-flex gap-4 text-white-50">
+      <span><i class="bi bi-telephone me-1 text-tt-mint"></i><a class="tt-topbar-link" href="{{ url_for('public.contact') }}">+91 1800-000-000</a></span>
+      <span><i class="bi bi-envelope me-1 text-tt-mint"></i><a class="tt-topbar-link" href="mailto:support@tourtravel.com">support@tourtravel.com</a></span>
+    </div>
+    <div class="d-flex gap-3 align-items-center text-white-50">
+      <span><i class="bi bi-clock me-1"></i>Mon–Sat, 9:00–18:00 IST</span>
+      {% if session.user_id %}
+        <a class="tt-topbar-link fw-semibold" href="{{ url_for('user.dashboard') }}"><i class="bi bi-person-check me-1"></i>{{ session.user_name or 'Account' }}</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-expand-lg navbar-dark navbar-tt sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{{ url_for('public.home') }}">Vista<span class="text-info">Travel</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public.home') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public.packages_list') }}">Packages</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public.destinations_list') }}">Destinations</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public.offers_page') }}">Offers</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('public.gallery_page') }}">Gallery</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Categories</a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            {% for c in header_categories %}
+              <li><a class="dropdown-item" href="{{ url_for('public.packages_list', category_id=c.id) }}">{{ c.name }}</a></li>
+            {% else %}
+              <li><span class="dropdown-item text-muted">No categories</span></li>
+            {% endfor %}
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Explore</a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="{{ url_for('public.static_page', slug='about') }}">About</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('public.static_page', slug='faq') }}">FAQ</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('public.contact') }}">Contact</a></li>
+          </ul>
+        </li>
+      </ul>
+      <div class="d-flex gap-2 align-items-center flex-shrink-0">
+        {% if session.user_id %}
+          <a class="btn btn-sm btn-outline-light rounded-pill d-none d-sm-inline-flex align-items-center" href="{{ url_for('user.dashboard') }}"><i class="bi bi-grid-1x2-fill me-1"></i>Account</a>
+          <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('auth.user_logout') }}">Logout</a>
+        {% else %}
+          <a class="btn btn-sm btn-outline-light rounded-pill" href="{{ url_for('auth.user_login') }}">Sign in</a>
+          <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('auth.register') }}">Create account</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer-tt">
+  <div class="container">
+    <div class="row g-4 g-lg-5">
+      <div class="col-lg-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <span class="footer-brand-mark"><i class="bi bi-airplane-fill"></i></span>
+          <h5 class="text-white mb-0 fw-bold">VistaTravel</h5>
+        </div>
+        <p class="small mb-3 tt-footer-lead">Full-service tour desk for leisure and corporate groups—curated itineraries, vetted partners, and clear paperwork from quote to boarding pass.</p>
+        <div class="d-flex gap-2">
+          <span class="badge rounded-pill tt-footer-badge"><i class="bi bi-patch-check-fill me-1"></i>Verified operators</span>
+          <span class="badge rounded-pill tt-footer-badge"><i class="bi bi-receipt me-1"></i>Transparent billing</span>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white text-uppercase small fw-bold letter-spacing mb-3">Discover</h6>
+        <ul class="list-unstyled small footer-links">
+          <li><a href="{{ url_for('public.packages_list') }}">All packages</a></li>
+          <li><a href="{{ url_for('public.destinations_list') }}">Destinations</a></li>
+          <li><a href="{{ url_for('public.offers_page') }}">Offers</a></li>
+          <li><a href="{{ url_for('public.gallery_page') }}">Gallery</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h6 class="text-white text-uppercase small fw-bold letter-spacing mb-3">Company</h6>
+        <ul class="list-unstyled small footer-links">
+          <li><a href="{{ url_for('public.static_page', slug='about') }}">About us</a></li>
+          <li><a href="{{ url_for('public.contact') }}">Contact</a></li>
+          <li><a href="{{ url_for('public.static_page', slug='faq') }}">FAQ</a></li>
+          <li><a href="{{ url_for('admin_auth.login') }}">Partner login</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h6 class="text-white text-uppercase small fw-bold letter-spacing mb-3">Policies</h6>
+        <ul class="list-unstyled small footer-links mb-4">
+          <li><a href="{{ url_for('public.static_page', slug='terms') }}">Terms &amp; conditions</a></li>
+          <li><a href="{{ url_for('public.static_page', slug='privacy') }}">Privacy policy</a></li>
+          <li><a href="{{ url_for('public.static_page', slug='cancellation') }}">Cancellation policy</a></li>
+        </ul>
+        <p class="small text-secondary mb-0"><i class="bi bi-info-circle me-1"></i>Payments are recorded in-system; settlement timelines follow your booking confirmation and policy in force at the time of travel.</p>
+      </div>
+    </div>
+    <hr class="border-secondary border-opacity-25 my-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 small text-secondary">
+      <span>&copy; 2026 VistaTravel. All rights reserved.</span>
+      <span class="text-md-end">Crafted for professional tour operations &amp; guest peace of mind.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

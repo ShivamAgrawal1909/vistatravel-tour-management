@@ -1,0 +1,20 @@
+{% extends 'base_public.html' %}
+{% block title %}Recover account · VistaTravel{% endblock %}
+{% block content %}
+<div class="tt-auth-shell">
+  <div class="container col-md-5">
+    <div class="tt-panel border-0 shadow">
+      <div class="tt-panel-body p-4 p-md-5">
+        <h1 class="h4 fw-bold text-tt-navy mb-2">Account recovery</h1>
+        <p class="small text-muted mb-4">Enter your email. For security, this demo shows a reset link on screen instead of sending external mail.</p>
+        <form method="post">
+          <label class="form-label small fw-semibold">Email</label>
+          <input class="form-control form-control-lg mb-3" type="email" name="email" required>
+          <button type="submit" class="btn btn-tt-primary w-100 rounded-pill">Continue</button>
+        </form>
+        <p class="small mt-4 mb-0"><a href="{{ url_for('auth.user_login') }}" class="text-tt-teal fw-semibold text-decoration-none">← Back to sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

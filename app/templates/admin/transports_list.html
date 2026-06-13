@@ -1,0 +1,9 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Transport{% endblock %}
+{% block content %}
+<a class="btn btn-tt-primary mb-3" href="{{ url_for('admin.transport_form') }}">Add</a>
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>Type</th><th>Seats</th><th></th></tr></thead><tbody>
+{% for t in items %}<tr><td>{{ t.transport_type }}</td><td>{{ t.seat_capacity }}</td><td><a href="{{ url_for('admin.transport_form', tid=t.id) }}">Edit</a>
+<form class="d-inline" method="post" action="{{ url_for('admin.transport_delete', tid=t.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

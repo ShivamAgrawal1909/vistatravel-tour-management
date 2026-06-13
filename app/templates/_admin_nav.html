@@ -1,0 +1,39 @@
+{% from '_admin_nav_macros.html' import nav_active %}
+<nav class="admin-nav flex-column" aria-label="Admin modules">
+  <div class="admin-nav-group">
+    <span class="admin-nav-label">Overview</span>
+    <a class="admin-nav-link {{ nav_active('admin.dashboard') }}" href="{{ url_for('admin.dashboard') }}"><i class="bi bi-grid-1x2-fill"></i>Dashboard</a>
+    <a class="admin-nav-link {{ nav_active('admin.reports', 'admin.report_bookings_csv', 'admin.report_payments_csv', 'admin.report_users_csv') }}" href="{{ url_for('admin.reports') }}"><i class="bi bi-file-earmark-bar-graph"></i>Reports &amp; export</a>
+  </div>
+  <div class="admin-nav-group">
+    <span class="admin-nav-label">Catalog</span>
+    <a class="admin-nav-link {{ nav_active('admin.brands', 'admin.brand_form', 'admin.brand_delete') }}" href="{{ url_for('admin.brands') }}"><i class="bi bi-award"></i>Brands</a>
+    <a class="admin-nav-link {{ nav_active('admin.categories', 'admin.category_form', 'admin.category_delete') }}" href="{{ url_for('admin.categories') }}"><i class="bi bi-folder"></i>Categories</a>
+    <a class="admin-nav-link {{ nav_active('admin.destinations', 'admin.destination_form', 'admin.destination_delete') }}" href="{{ url_for('admin.destinations') }}"><i class="bi bi-geo-alt"></i>Destinations</a>
+    <a class="admin-nav-link {{ nav_active('admin.hotels', 'admin.hotel_form', 'admin.hotel_delete') }}" href="{{ url_for('admin.hotels') }}"><i class="bi bi-building"></i>Hotels</a>
+    <a class="admin-nav-link {{ nav_active('admin.transports', 'admin.transport_form', 'admin.transport_delete') }}" href="{{ url_for('admin.transports') }}"><i class="bi bi-truck-front"></i>Transport</a>
+    <a class="admin-nav-link {{ nav_active('admin.packages', 'admin.package_form', 'admin.package_detail_admin', 'admin.package_delete', 'admin.package_dates', 'admin.package_date_form', 'admin.package_date_delete', 'admin.package_image_delete') }}" href="{{ url_for('admin.packages') }}"><i class="bi bi-suitcase-lg"></i>Tour packages</a>
+  </div>
+  <div class="admin-nav-group">
+    <span class="admin-nav-label">Marketing</span>
+    <a class="admin-nav-link {{ nav_active('admin.offers', 'admin.offer_form', 'admin.offer_delete') }}" href="{{ url_for('admin.offers') }}"><i class="bi bi-tag"></i>Offers</a>
+    <a class="admin-nav-link {{ nav_active('admin.coupons', 'admin.coupon_form', 'admin.coupon_delete', 'admin.coupon_usage') }}" href="{{ url_for('admin.coupons') }}"><i class="bi bi-ticket-perforated"></i>Coupons</a>
+    <a class="admin-nav-link {{ nav_active('admin.testimonials', 'admin.testimonial_form', 'admin.testimonial_delete') }}" href="{{ url_for('admin.testimonials') }}"><i class="bi bi-quote"></i>Testimonials</a>
+    <a class="admin-nav-link {{ nav_active('admin.gallery', 'admin.gallery_form', 'admin.gallery_delete') }}" href="{{ url_for('admin.gallery') }}"><i class="bi bi-images"></i>Gallery</a>
+    <a class="admin-nav-link {{ nav_active('admin.homepage', 'admin.slider_form', 'admin.slider_delete') }}" href="{{ url_for('admin.homepage') }}"><i class="bi bi-window-desktop"></i>Homepage</a>
+    <a class="admin-nav-link {{ nav_active('admin.static_pages', 'admin.static_page_edit', 'admin.static_page_new') }}" href="{{ url_for('admin.static_pages') }}"><i class="bi bi-file-text"></i>Static pages</a>
+  </div>
+  <div class="admin-nav-group">
+    <span class="admin-nav-label">Operations</span>
+    <a class="admin-nav-link {{ nav_active('admin.users', 'admin.user_detail', 'admin.user_edit', 'admin.user_delete', 'admin.user_password_reset') }}" href="{{ url_for('admin.users') }}"><i class="bi bi-people"></i>Users</a>
+    <a class="admin-nav-link {{ nav_active('admin.bookings', 'admin.booking_detail', 'admin.booking_travellers_update', 'admin.booking_receipt') }}" href="{{ url_for('admin.bookings') }}"><i class="bi bi-calendar-check"></i>Bookings</a>
+    <a class="admin-nav-link {{ nav_active('admin.payments', 'admin.payment_new', 'admin.payment_edit', 'admin.payment_delete', 'admin.payment_receipt') }}" href="{{ url_for('admin.payments') }}"><i class="bi bi-credit-card"></i>Payments</a>
+    <a class="admin-nav-link {{ nav_active('admin.enquiries', 'admin.enquiry_detail', 'admin.enquiry_delete') }}" href="{{ url_for('admin.enquiries') }}"><i class="bi bi-envelope"></i>Enquiries</a>
+    <a class="admin-nav-link {{ nav_active('admin.reviews', 'admin.review_action', 'admin.review_delete', 'admin.review_edit') }}" href="{{ url_for('admin.reviews') }}"><i class="bi bi-star"></i>Reviews</a>
+  </div>
+  <div class="admin-nav-group border-top border-secondary border-opacity-25 pt-3 mt-2">
+    <a class="admin-nav-link" href="{{ url_for('admin_auth.profile') }}"><i class="bi bi-person-gear"></i>Admin profile</a>
+    <a class="admin-nav-link" href="{{ url_for('public.home') }}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i>View website</a>
+    <a class="admin-nav-link text-danger" href="{{ url_for('admin_auth.logout') }}"><i class="bi bi-box-arrow-left"></i>Sign out</a>
+  </div>
+</nav>

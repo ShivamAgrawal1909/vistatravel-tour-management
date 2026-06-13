@@ -1,0 +1,20 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import static_img %}
+{% block page_title %}Gallery{% endblock %}
+{% block content %}
+<a class="btn btn-tt-primary mb-3" href="{{ url_for('admin.gallery_form') }}">Add image</a>
+<div class="row g-3">
+{% for g in items %}
+  <div class="col-md-3">
+    <div class="card card-tt">
+      <img src="{{ static_img(g.image_path) }}" class="card-img-top" style="height:140px;object-fit:cover">
+      <div class="card-body py-2 small">
+        {{ g.title }}
+        <a href="{{ url_for('admin.gallery_form', gid=g.id) }}">Edit</a>
+        <form class="d-inline" method="post" action="{{ url_for('admin.gallery_delete', gid=g.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% endblock %}

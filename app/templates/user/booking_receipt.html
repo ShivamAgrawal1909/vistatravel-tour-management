@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Receipt {{ booking.public_id }} · VistaTravel</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    body { font-family: "Segoe UI", system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+    .receipt { max-width: 640px; margin: 2rem auto; background: #fff; border-radius: 16px; box-shadow: 0 20px 50px rgba(15,23,42,.08); overflow: hidden; }
+    .receipt-head { background: linear-gradient(135deg, #0f172a, #134e4a); color: #f8fafc; padding: 1.5rem 2rem; }
+    .receipt-body { padding: 2rem; }
+    .receipt dl dt { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: #64748b; }
+    .receipt dl dd { font-weight: 600; margin-bottom: 1rem; }
+    @media print { body { background: #fff; } .receipt { box-shadow: none; margin: 0; max-width: 100%; } .no-print { display: none !important; } }
+  </style>
+</head>
+<body>
+<div class="text-center no-print py-3">
+  <button type="button" class="btn btn-dark rounded-pill px-4" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print or save as PDF</button>
+  <a class="btn btn-outline-secondary rounded-pill ms-2" href="{{ url_for('user.booking_detail', booking_id=booking.id) }}">Back to booking</a>
+</div>
+<div class="receipt">
+  <div class="receipt-head">
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="rounded-3 d-inline-flex align-items-center justify-content-center bg-white bg-opacity-10" style="width:44px;height:44px"><i class="bi bi-airplane-fill fs-5"></i></span>
+      <div>
+        <div class="fw-bold fs-5">VistaTravel</div>
+        <div class="small opacity-75">Booking confirmation / receipt</div>
+      </div>
+    </div>
+  </div>
+  <div class="receipt-body">
+    <div class="row mb-4">
+      <div class="col-sm-6">
+        <dl class="mb-0">
+          <dt>Booking reference</dt>
+          <dd class="font-monospace fs-5 text-primary">{{ booking.public_id }}</dd>
+        </dl>
+      </div>
+      <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+        <dl class="mb-0">
+          <dt>Date issued</dt>
+          <dd>{% if booking.created_at %}{{ booking.created_at.strftime('%d %B %Y') }}{% else %}—{% endif %}</dd>
+        </dl>
+      </div>
+    </div>
+    <dl class="row">
+      <div class="col-md-6"><dt>Guest</dt><dd>{{ booking.user.full_name if booking.user else '—' }}</dd></div>
+      <div class="col-md-6"><dt>Email</dt><dd class="text-break">{{ booking.user.email if booking.user else '—' }}</dd></div>
+      <div class="col-12"><dt>Package</dt><dd>{{ booking.package.title if booking.package else '—' }}</dd></div>
+      <div class="col-md-6"><dt>Travel date</dt><dd>{% if booking.travel_slot %}{{ booking.travel_slot.travel_date.strftime('%d %B %Y') }}{% else %}To be confirmed{% endif %}</dd></div>
+      <div class="col-md-6"><dt>Travellers</dt><dd>{{ booking.travellers_count }}</dd></div>
+      <div class="col-md-6"><dt>Booking status</dt><dd class="text-capitalize">{{ booking.status }}</dd></div>
+      <div class="col-md-6"><dt>Payment status</dt><dd class="text-capitalize">{{ booking.payment_status }}</dd></div>
+      <div class="col-12"><dt>Total amount</dt><dd class="fs-4 text-success">₹ {{ '%.2f'|format(booking.total_amount|float) }}</dd></div>
+    </dl>
+    <p class="small text-muted border-top pt-3 mb-0">This document is generated from your VistaTravel account. Final invoicing may reflect adjustments approved by our operations desk. For questions, use the contact page on our website.</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+{% extends 'base_public.html' %}
+{% block title %}New password · VistaTravel{% endblock %}
+{% block content %}
+<div class="tt-auth-shell">
+  <div class="container col-md-5">
+    <div class="tt-panel border-0 shadow">
+      <div class="tt-panel-body p-4 p-md-5">
+        <h1 class="h4 fw-bold text-tt-navy mb-4">Choose a new password</h1>
+        <form method="post">
+          <label class="form-label small fw-semibold">New password</label>
+          <input class="form-control form-control-lg mb-2" type="password" name="password" required minlength="6">
+          <label class="form-label small fw-semibold">Confirm</label>
+          <input class="form-control form-control-lg mb-4" type="password" name="confirm_password" required>
+          <button type="submit" class="btn btn-tt-primary w-100 rounded-pill">Update password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

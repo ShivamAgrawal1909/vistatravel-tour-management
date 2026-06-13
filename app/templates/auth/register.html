@@ -1,0 +1,57 @@
+{% extends 'base_public.html' %}
+{% block title %}Create account · VistaTravel{% endblock %}
+{% block content %}
+<div class="tt-auth-shell">
+  <div class="container">
+    <div class="row justify-content-center g-0 tt-auth-card bg-white shadow">
+      <div class="col-lg-5 tt-auth-aside d-none d-lg-flex flex-column justify-content-center order-lg-2">
+        <h1 class="h4 fw-bold mb-3">Travel with clarity</h1>
+        <p class="small opacity-90 mb-0">Registration unlocks wishlists, structured booking forms, payment tracking, and enquiry history — without exposing payment card data online.</p>
+      </div>
+      <div class="col-lg-7 p-4 p-md-5 order-lg-1">
+        <h2 class="h4 fw-bold text-tt-navy mb-1">Create your profile</h2>
+        <p class="text-muted small mb-4">All fields marked with your booking flow can be updated later from the account area.</p>
+        <form method="post">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Full name</label>
+              <input class="form-control" name="full_name" required autocomplete="name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Gender</label>
+              <select class="form-select" name="gender">
+                <option value="">Prefer not to say</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Email</label>
+              <input class="form-control" type="email" name="email" required autocomplete="email">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Mobile</label>
+              <input class="form-control" name="mobile" inputmode="tel" autocomplete="tel">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Address</label>
+              <textarea class="form-control" name="address" rows="2" autocomplete="street-address"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Password</label>
+              <input class="form-control" type="password" name="password" required minlength="6" autocomplete="new-password">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Confirm password</label>
+              <input class="form-control" type="password" name="confirm_password" required autocomplete="new-password">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-tt-primary btn-lg w-100 rounded-pill mt-4">Register</button>
+        </form>
+        <p class="small text-center text-muted mt-4 mb-0">Already registered? <a href="{{ url_for('auth.user_login') }}" class="fw-semibold text-tt-teal text-decoration-none">Sign in</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

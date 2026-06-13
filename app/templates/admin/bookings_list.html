@@ -1,0 +1,52 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import booking_status_badge, payment_status_badge %}
+{% block title %}Bookings{% endblock %}
+{% block page_title %}Bookings{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item active">Bookings</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card mb-3">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Filters</h2></div>
+  <div class="admin-card-body">
+    <form class="row g-2 align-items-end" method="get">
+      <div class="col-md-2"><label class="form-label small mb-0">Booking ID</label><input class="form-control form-control-sm" name="public_id" value="{{ request.args.get('public_id','') }}" placeholder="VT-…"></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Status</label><select class="form-select form-select-sm" name="status"><option value="">Any</option>{% for s in ['pending','confirmed','cancelled','completed'] %}<option value="{{ s }}" {% if request.args.get('status')==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Payment</label><select class="form-select form-select-sm" name="payment_status"><option value="">Any</option>{% for s in ['pending','paid','partial','failed'] %}<option value="{{ s }}" {% if request.args.get('payment_status')==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+      <div class="col-md-2"><label class="form-label small mb-0">User ID</label><input class="form-control form-control-sm" name="user_id" type="number" value="{{ request.args.get('user_id','') }}" placeholder="optional"></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Package ID</label><input class="form-control form-control-sm" name="package_id" type="number" value="{{ request.args.get('package_id','') }}" placeholder="optional"></div>
+      <div class="col-md-2"><label class="form-label small mb-0">From</label><input class="form-control form-control-sm" type="date" name="date_from" value="{{ request.args.get('date_from','') }}"></div>
+      <div class="col-md-2"><label class="form-label small mb-0">To</label><input class="form-control form-control-sm" type="date" name="date_to" value="{{ request.args.get('date_to','') }}"></div>
+      <div class="col-md-2"><button type="submit" class="btn btn-tt-primary btn-sm w-100 rounded-pill">Apply</button></div>
+    </form>
+  </div>
+</div>
+<div class="admin-card">
+  <div class="admin-card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div><h2 class="h6 mb-0">All bookings</h2><span class="small text-admin-muted">Latest 500 matching filters</span></div>
+  </div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>Reference</th><th>Customer</th><th>Package</th><th>Status</th><th>Payment</th><th class="text-end">Manage</th></tr></thead>
+        <tbody>
+          {% for b in items %}
+            <tr>
+              <td class="fw-semibold">{{ b.public_id }}</td>
+              <td class="small">{{ b.user.full_name if b.user else '—' }}</td>
+              <td class="small">{{ b.package.title if b.package else '—' }}</td>
+              <td>{{ booking_status_badge(b.status) }}</td>
+              <td>{{ payment_status_badge(b.payment_status) }}</td>
+              <td class="text-end"><a class="btn btn-sm btn-outline-primary rounded-pill py-0" href="{{ url_for('admin.booking_detail', bid=b.id) }}">Open</a></td>
+            </tr>
+          {% else %}
+            <tr><td colspan="6" class="text-center text-admin-muted py-4">No bookings match.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base_user.html' %}
+{% from '_macros.html' import static_img %}
+{% block title %}Wishlist · VistaTravel{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+{% endblock %}
+{% block user_page_header %}
+<h1 class="h3 fw-bold text-tt-navy mb-1">Saved packages</h1>
+<p class="text-muted mb-0">Compare favourites, share with family, or move straight into booking when dates suit you.</p>
+{% endblock %}
+{% block user_body %}
+{% if items %}
+  <div class="row g-4">
+    {% for w in items %}
+      <div class="col-md-6 col-xl-4">
+        <div class="card card-tt h-100 border-0">
+          <div class="position-relative">
+            <img src="{{ static_img(w.package.main_image) or url_for('static', filename='img/placeholder.svg') }}" class="card-img-top" alt="" style="height:200px;object-fit:cover">
+            {% if w.package.is_featured %}<span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark">Featured</span>{% endif %}
+          </div>
+          <div class="card-body d-flex flex-column">
+            <p class="small text-muted mb-1">{{ w.package.destination.name if w.package.destination else '' }} · {{ w.package.duration_days }}D/{{ w.package.duration_nights }}N</p>
+            <h2 class="h6 fw-bold card-title">{{ w.package.title }}</h2>
+            <div class="mt-auto pt-2">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                {% if w.package.discount_price %}
+                  <span class="fs-5 fw-bold text-success">₹ {{ w.package.discount_price }}</span>
+                  <span class="text-muted text-decoration-line-through small">₹ {{ w.package.price }}</span>
+                {% else %}
+                  <span class="fs-5 fw-bold">₹ {{ w.package.price }}</span>
+                {% endif %}
+              </div>
+              <div class="d-grid gap-2">
+                <a class="btn btn-tt-primary rounded-pill" href="{{ url_for('public.book_package', pkg_id=w.package.id) }}"><i class="bi bi-calendar-plus me-1"></i>Book this trip</a>
+                <div class="d-flex gap-2">
+                  <a class="btn btn-outline-secondary btn-sm flex-grow-1 rounded-pill" href="{{ url_for('public.package_detail', pkg_id=w.package.id) }}">Details</a>
+                  <form method="post" action="{{ url_for('user.wishlist_remove', wid=w.id) }}" class="flex-grow-1" onsubmit="return confirm('Remove from wishlist?');">
+                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 rounded-pill">Remove</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="tt-panel">
+    <div class="tt-panel-body text-center py-5">
+      <i class="bi bi-heart d-block fs-1 text-muted mb-3 opacity-50"></i>
+      <h2 class="h5 fw-bold text-tt-navy">Your wishlist is empty</h2>
+      <p class="text-muted col-md-8 mx-auto mb-4">Tap the heart on any package page while signed in to save it here for later.</p>
+      <a class="btn btn-tt-primary rounded-pill" href="{{ url_for('public.packages_list') }}"><i class="bi bi-compass me-1"></i>Browse packages</a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

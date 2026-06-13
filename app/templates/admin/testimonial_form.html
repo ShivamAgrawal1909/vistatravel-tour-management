@@ -1,0 +1,11 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Testimonial{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="card card-tt p-4 col-lg-7">
+  <input class="form-control mb-2" name="customer_name" value="{{ testimonial.customer_name if testimonial else '' }}" required>
+  <textarea class="form-control mb-2" name="content" rows="4" required>{{ testimonial.content if testimonial else '' }}</textarea>
+  <input class="form-control mb-2" type="file" name="image">
+  <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="is_visible" {% if not testimonial or testimonial.is_visible %}checked{% endif %}><label class="form-check-label">Visible</label></div>
+  <button class="btn btn-tt-primary">Save</button>
+</form>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base_admin.html' %}
+{% from '_admin_macros.html' import btn_delete %}
+{% block title %}Packages{% endblock %}
+{% block page_title %}Tour packages{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-tt-primary rounded-pill" href="{{ url_for('admin.package_form') }}"><i class="bi bi-plus-lg me-1"></i>New package</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item active">Packages</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card mb-3">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Search &amp; filters</h2></div>
+  <div class="admin-card-body">
+    <form class="row g-2 align-items-end" method="get">
+      <div class="col-md-3"><label class="form-label small mb-0">Title</label><input class="form-control form-control-sm" name="q" value="{{ request.args.get('q','') }}" placeholder="Keyword"></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Brand</label><select class="form-select form-select-sm" name="brand_id"><option value="">Any</option>{% for b in brands %}<option value="{{ b.id }}" {% if request.args.get('brand_id') == b.id|string %}selected{% endif %}>{{ b.name }}</option>{% endfor %}</select></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Category</label><select class="form-select form-select-sm" name="category_id"><option value="">Any</option>{% for c in categories %}<option value="{{ c.id }}" {% if request.args.get('category_id') == c.id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Destination</label><select class="form-select form-select-sm" name="destination_id"><option value="">Any</option>{% for d in destinations %}<option value="{{ d.id }}" {% if request.args.get('destination_id') == d.id|string %}selected{% endif %}>{{ d.name }}</option>{% endfor %}</select></div>
+      <div class="col-md-2"><label class="form-label small mb-0">Status</label><select class="form-select form-select-sm" name="status"><option value="">Any</option><option value="available" {% if request.args.get('status')=='available' %}selected{% endif %}>Available</option><option value="unavailable" {% if request.args.get('status')=='unavailable' %}selected{% endif %}>Unavailable</option></select></div>
+      <div class="col-md-1"><button type="submit" class="btn btn-tt-primary btn-sm w-100 rounded-pill">Go</button></div>
+    </form>
+  </div>
+</div>
+<div class="admin-card">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Catalog</h2></div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>Title</th><th>Brand</th><th>Price</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for p in items %}
+            <tr>
+              <td class="fw-semibold">{{ p.title }}</td>
+              <td class="small">{{ p.brand.name if p.brand else '—' }}</td>
+              <td>₹{{ p.price }}{% if p.discount_price %} <span class="text-success small">→ ₹{{ p.discount_price }}</span>{% endif %}</td>
+              <td><span class="badge {% if p.status=='available' %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ p.status }}</span></td>
+              <td class="text-end text-nowrap">
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.package_detail_admin', pid=p.id) }}">View</a>
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.package_dates', pid=p.id) }}">Dates</a>
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.package_form', pid=p.id) }}">Edit</a>
+                {{ btn_delete(url_for('admin.package_delete', pid=p.id), 'Delete this package?') }}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="text-center text-admin-muted py-4">No packages.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

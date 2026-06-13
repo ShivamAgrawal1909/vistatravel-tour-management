@@ -1,0 +1,67 @@
+{% extends 'base_user.html' %}
+{% block title %}Submit payment · {{ booking.public_id }}{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item"><a href="{{ url_for('user.bookings') }}">Bookings</a></li>
+<li class="breadcrumb-item"><a href="{{ url_for('user.booking_detail', booking_id=booking.id) }}"><span class="tt-mono">{{ booking.public_id }}</span></a></li>
+<li class="breadcrumb-item active" aria-current="page">Payment</li>
+{% endblock %}
+{% block user_page_header %}
+<h1 class="h3 fw-bold text-tt-navy mb-1">Submit payment details</h1>
+<p class="text-muted mb-0">Booking <span class="tt-mono fw-semibold">{{ booking.public_id }}</span> · Package balance is reconciled manually after verification.</p>
+{% endblock %}
+{% block user_body %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="tt-panel">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Payment form</h2>
+      </div>
+      <div class="tt-panel-body">
+        <form method="post" enctype="multipart/form-data" class="row g-3">
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Amount (₹)</label>
+            <input class="form-control form-control-lg" type="number" step="0.01" name="amount" required placeholder="e.g. 15000.00">
+            <div class="form-text">Enter the amount you are paying in this transaction. You can make multiple submissions for partial payments.</div>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Payment mode</label>
+            <select class="form-select" name="mode" required>
+              <option value="Cash">Cash (deposited / handed at office)</option>
+              <option value="Bank Transfer">Bank transfer / NEFT / RTGS / UPI</option>
+              <option value="Card">Card (manual entry — not online gateway)</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Transaction / reference number</label>
+            <input class="form-control tt-mono" name="reference_no" placeholder="UTR, cheque no., or receipt ID">
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Proof (optional)</label>
+            <input class="form-control" type="file" name="proof" accept="image/*,.pdf">
+            <div class="form-text">Screenshot or PDF of bank confirmation helps us verify faster.</div>
+          </div>
+          <div class="col-12 d-flex gap-2 mt-2">
+            <button class="btn btn-tt-primary rounded-pill px-4" type="submit"><i class="bi bi-send me-1"></i>Submit for verification</button>
+            <a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('user.booking_detail', booking_id=booking.id) }}">Back to booking</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="tt-panel mb-3">
+      <div class="tt-panel-body">
+        <h3 class="h6 fw-bold text-tt-navy mb-3">Booking amount</h3>
+        <div class="d-flex justify-content-between mb-2"><span class="text-muted">Package total</span><span class="fw-bold">₹ {{ '%.2f'|format(booking.total_amount|float) }}</span></div>
+        <div class="d-flex justify-content-between mb-2"><span class="text-muted">Booking status</span><span class="text-capitalize">{{ booking.status }}</span></div>
+        <div class="d-flex justify-content-between"><span class="text-muted">Payment status</span><span class="text-capitalize">{{ booking.payment_status }}</span></div>
+        <hr>
+        <p class="small text-muted mb-0"><i class="bi bi-hourglass-split me-1"></i>Typical verification: 1–2 business days after we receive clear reference details.</p>
+      </div>
+    </div>
+    <div class="alert alert-light border small mb-0">
+      <strong>Security note:</strong> VistaTravel will never ask for full card numbers or OTPs by email. Only submit what you are comfortable sharing for reconciliation.
+    </div>
+  </div>
+</div>
+{% endblock %}

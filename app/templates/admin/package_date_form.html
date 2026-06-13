@@ -1,0 +1,12 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Travel date{% endblock %}
+{% block content %}
+<form method="post" class="card card-tt p-4 col-md-6">
+  <p class="small text-muted">Package: {{ package.title }}</p>
+  <input class="form-control mb-2" type="date" name="travel_date" value="{% if date_row and date_row.travel_date %}{{ date_row.travel_date.strftime('%Y-%m-%d') }}{% endif %}" required>
+  <input class="form-control mb-2" type="number" name="seats_available" value="{{ date_row.seats_available if date_row else 10 }}">
+  <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="booking_closed" {% if date_row and date_row.booking_closed %}checked{% endif %}><label class="form-check-label">Booking closed</label></div>
+  <button class="btn btn-tt-primary">Save</button>
+  <a class="btn btn-link" href="{{ url_for('admin.package_dates', pid=package.id) }}">Back</a>
+</form>
+{% endblock %}

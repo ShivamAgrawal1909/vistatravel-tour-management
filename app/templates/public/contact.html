@@ -1,0 +1,75 @@
+{% extends 'base_public.html' %}
+{% block title %}Contact us · VistaTravel{% endblock %}
+{% block content %}
+<section class="tt-page-hero py-4">
+  <div class="container">
+    <h1 class="h2 fw-bold mb-2">Contact our travel desk</h1>
+    <p class="tt-page-hero-lead mb-0">Corporate groups, bespoke FIT, or post-booking support — reach the same operations team that manages inventory on this site.</p>
+  </div>
+</section>
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-5">
+      <div class="tt-panel border-0 shadow h-100">
+        <div class="tt-panel-body">
+          <h2 class="h5 fw-bold text-tt-navy mb-4">Direct lines</h2>
+          <ul class="list-unstyled vstack gap-4">
+            <li class="d-flex gap-3">
+              <span class="rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px"><i class="bi bi-telephone fs-5 text-tt-teal"></i></span>
+              <div>
+                <div class="small text-muted text-uppercase fw-bold">Phone</div>
+                <a class="fw-semibold text-decoration-none" href="tel:+911800000000">+91 1800-000-000</a>
+                <div class="small text-muted">Mon–Sat · 9:00–18:00 IST</div>
+              </div>
+            </li>
+            <li class="d-flex gap-3">
+              <span class="rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px"><i class="bi bi-envelope fs-5 text-tt-teal"></i></span>
+              <div>
+                <div class="small text-muted text-uppercase fw-bold">Email</div>
+                <a class="fw-semibold text-decoration-none" href="mailto:support@tourtravel.com">support@tourtravel.com</a>
+              </div>
+            </li>
+            <li class="d-flex gap-3">
+              <span class="rounded-3 bg-light d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px"><i class="bi bi-geo-alt fs-5 text-tt-teal"></i></span>
+              <div>
+                <div class="small text-muted text-uppercase fw-bold">Office</div>
+                <p class="mb-0 small">Tour operations &amp; billing — by appointment. Detailed address shared on confirmation.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="tt-panel border-0 shadow">
+        <div class="tt-panel-header">
+          <h2 class="h6 fw-bold text-tt-navy mb-0">Send a message</h2>
+        </div>
+        <div class="tt-panel-body">
+          <form method="post" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Full name</label>
+              <input class="form-control" name="name" required autocomplete="name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Email</label>
+              <input class="form-control" type="email" name="email" required autocomplete="email">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Phone</label>
+              <input class="form-control" name="phone" inputmode="tel" autocomplete="tel">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">How can we help?</label>
+              <textarea class="form-control" name="message" rows="5" required placeholder="Trip idea, group size, preferred month, or support on an existing booking."></textarea>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-tt-primary rounded-pill px-4"><i class="bi bi-send me-2"></i>Submit enquiry</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

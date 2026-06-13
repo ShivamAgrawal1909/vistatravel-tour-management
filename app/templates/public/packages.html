@@ -1,0 +1,92 @@
+{% extends 'base_public.html' %}
+{% from '_macros.html' import static_img %}
+{% block title %}Tour packages · VistaTravel{% endblock %}
+{% block content %}
+<section class="tt-page-hero py-4">
+  <div class="container">
+    <h1 class="h2 fw-bold mb-2">Curated tour packages</h1>
+    <p class="tt-page-hero-lead mb-0">Filter by brand, destination, budget, duration, or a specific departure date. All prices are indicative until your booking is confirmed.</p>
+  </div>
+</section>
+<div class="container py-4">
+  <div class="tt-panel mb-4">
+    <div class="tt-panel-header">
+      <span class="fw-bold text-tt-navy"><i class="bi bi-funnel me-2 text-tt-teal"></i>Refine results</span>
+      <a class="small text-decoration-none" href="{{ url_for('public.packages_list') }}">Reset filters</a>
+    </div>
+    <div class="tt-panel-body">
+    <form class="row g-2 align-items-end" method="get">
+      <div class="col-md-3"><label class="form-label small">Search</label><input class="form-control" name="q" value="{{ request.args.get('q','') }}" placeholder="Title"></div>
+      <div class="col-md-2"><label class="form-label small">Brand</label>
+        <select class="form-select" name="brand_id">
+          <option value="">Any</option>
+          {% for b in brands %}<option value="{{ b.id }}" {% if request.args.get('brand_id') == b.id|string %}selected{% endif %}>{{ b.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><label class="form-label small">Category</label>
+        <select class="form-select" name="category_id">
+          <option value="">Any</option>
+          {% for c in categories %}<option value="{{ c.id }}" {% if request.args.get('category_id') == c.id|string %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2"><label class="form-label small">Destination</label>
+        <select class="form-select" name="destination_id">
+          <option value="">Any</option>
+          {% for d in destinations %}<option value="{{ d.id }}" {% if request.args.get('destination_id') == d.id|string %}selected{% endif %}>{{ d.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-1"><label class="form-label small">Min ₹</label><input class="form-control" name="min_price" type="number" value="{{ request.args.get('min_price','') }}"></div>
+      <div class="col-md-1"><label class="form-label small">Max ₹</label><input class="form-control" name="max_price" type="number" value="{{ request.args.get('max_price','') }}"></div>
+      <div class="col-md-1"><label class="form-label small">Days</label><input class="form-control" name="min_days" type="number" placeholder="min" value="{{ request.args.get('min_days','') }}"></div>
+      <div class="col-md-1"><input class="form-control mt-4" name="max_days" type="number" placeholder="max" value="{{ request.args.get('max_days','') }}"></div>
+      <div class="col-md-2"><label class="form-label small">Travel date</label><input class="form-control" type="date" name="travel_date" value="{{ request.args.get('travel_date','') }}"></div>
+      <div class="col-md-2"><label class="form-label small">Sort</label>
+        <select class="form-select" name="sort">
+          <option value="latest" {% if request.args.get('sort')=='latest' %}selected{% endif %}>Latest</option>
+          <option value="price_asc" {% if request.args.get('sort')=='price_asc' %}selected{% endif %}>Price ↑</option>
+          <option value="price_desc" {% if request.args.get('sort')=='price_desc' %}selected{% endif %}>Price ↓</option>
+        </select>
+      </div>
+      <div class="col-md-2 form-check mt-4"><input class="form-check-input" type="checkbox" name="featured" value="1" id="feat" {% if request.args.get('featured')=='1' %}checked{% endif %}><label class="form-check-label" for="feat">Featured</label></div>
+      <div class="col-md-2"><button class="btn btn-tt-primary w-100 rounded-pill"><i class="bi bi-search me-1"></i>Apply</button></div>
+    </form>
+    </div>
+  </div>
+  <div class="row g-4">
+    {% for p in pagination.items %}
+      <div class="col-md-6 col-xl-4">
+        <div class="card card-tt h-100 border-0">
+          <div class="position-relative">
+            <img src="{{ static_img(p.main_image) or url_for('static', filename='img/placeholder.svg') }}" class="card-img-top" alt="">
+            {% if p.is_featured %}<span class="position-absolute top-0 start-0 m-2 badge bg-warning text-dark shadow-sm">Featured</span>{% endif %}
+          </div>
+          <div class="card-body d-flex flex-column">
+            <p class="small text-muted mb-1">{{ p.destination.name if p.destination else '' }} · {{ p.duration_days }}D/{{ p.duration_nights }}N</p>
+            <h2 class="h6 card-title fw-bold">{{ p.title }}</h2>
+            <p class="small text-secondary mb-2">{{ p.brand.name if p.brand }} · {{ p.category.name if p.category }}</p>
+            <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+              <div>
+                {% if p.discount_price %}
+                  <span class="fw-bold text-success fs-5">₹ {{ p.discount_price }}</span>
+                  <span class="text-muted text-decoration-line-through small d-block">₹ {{ p.price }}</span>
+                {% else %}
+                  <span class="fw-bold fs-5">₹ {{ p.price }}</span>
+                {% endif %}
+              </div>
+              <a class="btn btn-sm btn-tt-primary rounded-pill px-3" href="{{ url_for('public.package_detail', pkg_id=p.id) }}">Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-muted">No packages match your filters.</p>
+    {% endfor %}
+  </div>
+  <nav class="mt-4">
+    <ul class="pagination">
+      {% if pagination.has_prev %}<li class="page-item"><a class="page-link" href="{{ paginate_url(pagination.prev_num) }}">Prev</a></li>{% endif %}
+      {% if pagination.has_next %}<li class="page-item"><a class="page-link" href="{{ paginate_url(pagination.next_num) }}">Next</a></li>{% endif %}
+    </ul>
+  </nav>
+</div>
+{% endblock %}

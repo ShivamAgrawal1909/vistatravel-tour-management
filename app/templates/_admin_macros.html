@@ -1,0 +1,12 @@
+{% macro btn_delete(action, confirm='Delete this record?') -%}
+<form method="post" action="{{ action }}" class="d-inline" onsubmit="return confirm('{{ confirm }}');">
+  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+</form>
+{%- endmacro %}
+
+{% macro page_header(title, subtitle=None) -%}
+<div class="admin-page-head mb-4">
+  <h1 class="h4 fw-bold text-admin-heading mb-1">{{ title }}</h1>
+  {% if subtitle %}<p class="text-admin-muted small mb-0">{{ subtitle }}</p>{% endif %}
+</div>
+{%- endmacro %}

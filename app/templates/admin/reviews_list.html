@@ -1,0 +1,45 @@
+{% extends 'base_admin.html' %}
+{% from '_admin_macros.html' import btn_delete %}
+{% block title %}Reviews{% endblock %}
+{% block page_title %}Package reviews{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item active">Reviews</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="admin-card">
+  <div class="admin-card-header"><h2 class="h6 mb-0">Moderation queue</h2><span class="small text-admin-muted">Approve, hide, or edit review text</span></div>
+  <div class="admin-card-body p-0">
+    <div class="table-responsive">
+      <table class="table admin-table mb-0 align-middle">
+        <thead><tr><th>Guest</th><th>Package</th><th>Rating</th><th>Flags</th><th class="text-end">Actions</th></tr></thead>
+        <tbody>
+          {% for r in items %}
+            <tr>
+              <td class="small">{{ r.user.full_name if r.user else '—' }}</td>
+              <td class="small">{{ r.package.title if r.package else '—' }}</td>
+              <td><span class="badge text-bg-light border">{{ r.rating }}★</span></td>
+              <td class="small">
+                {% if r.is_approved %}<span class="badge text-bg-success bg-opacity-25 text-success">Approved</span>{% else %}<span class="badge text-bg-secondary">Pending</span>{% endif %}
+                {% if r.is_hidden %}<span class="badge text-bg-warning bg-opacity-25 text-warning ms-1">Hidden</span>{% endif %}
+              </td>
+              <td class="text-end">
+                <form method="post" action="{{ url_for('admin.review_action', rid=r.id) }}" class="d-inline-flex flex-wrap gap-1 align-items-center justify-content-end">
+                  <div class="form-check m-0 small"><input class="form-check-input" type="checkbox" name="is_approved" id="a{{ r.id }}" {% if r.is_approved %}checked{% endif %}><label class="form-check-label" for="a{{ r.id }}">OK</label></div>
+                  <div class="form-check m-0 small"><input class="form-check-input" type="checkbox" name="is_hidden" id="h{{ r.id }}" {% if r.is_hidden %}checked{% endif %}><label class="form-check-label" for="h{{ r.id }}">Hide</label></div>
+                  <button type="submit" class="btn btn-sm btn-outline-primary py-0">Apply</button>
+                </form>
+                <a class="btn btn-sm btn-link py-0" href="{{ url_for('admin.review_edit', rid=r.id) }}">Edit</a>
+                {{ btn_delete(url_for('admin.review_delete', rid=r.id), 'Delete this review?') }}
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="5" class="text-center text-admin-muted py-4">No reviews.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

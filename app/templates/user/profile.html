@@ -1,0 +1,82 @@
+{% extends 'base_user.html' %}
+{% from '_macros.html' import static_img %}
+{% block title %}Profile & details · VistaTravel{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item active" aria-current="page">Profile</li>
+{% endblock %}
+{% block user_page_header %}
+<h1 class="h3 fw-bold text-tt-navy mb-1">Profile &amp; contact details</h1>
+<p class="text-muted">Keep your name, phone, and address current so we can reach you about schedule changes or payment verification.</p>
+{% endblock %}
+{% block user_body %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="tt-panel">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Personal information</h2>
+        <a class="small fw-semibold text-tt-teal text-decoration-none" href="{{ url_for('user.change_password') }}">Change password</a>
+      </div>
+      <div class="tt-panel-body">
+        <form method="post" enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-md-8">
+              <label class="form-label small fw-semibold text-secondary">Full name</label>
+              <input class="form-control" name="full_name" value="{{ user.full_name }}" required autocomplete="name">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold text-secondary">Gender</label>
+              <select class="form-select" name="gender">
+                <option value="">Prefer not to say</option>
+                <option value="Male" {% if user.gender=='Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if user.gender=='Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if user.gender=='Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-secondary">Email (login)</label>
+              <input class="form-control bg-light" type="email" value="{{ user.email }}" disabled readonly>
+              <div class="form-text">Email is your sign-in ID. Contact support to change it.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold text-secondary">Mobile</label>
+              <input class="form-control" name="mobile" value="{{ user.mobile or '' }}" inputmode="tel" autocomplete="tel">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold text-secondary">Address</label>
+              <textarea class="form-control" name="address" rows="3" placeholder="Street, city, state, PIN">{{ user.address or '' }}</textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold text-secondary">Profile photo</label>
+              <input class="form-control" type="file" name="profile_image" accept="image/*">
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button class="btn btn-tt-primary rounded-pill px-4" type="submit"><i class="bi bi-check2 me-1"></i>Save changes</button>
+            <a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('user.dashboard') }}">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="tt-panel h-100">
+      <div class="tt-panel-body text-center">
+        {% if user.profile_image %}
+          <img src="{{ static_img(user.profile_image) }}" class="rounded-circle shadow mb-3" width="120" height="120" alt="" style="object-fit:cover">
+        {% else %}
+          <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width:120px;height:120px">
+            <i class="bi bi-person-fill text-secondary display-5"></i>
+          </div>
+        {% endif %}
+        <h3 class="h6 fw-bold">{{ user.full_name }}</h3>
+        <p class="small text-muted mb-0">Member since {% if user.created_at %}{{ user.created_at.strftime('%B %Y') }}{% else %}—{% endif %}</p>
+        <hr class="my-3">
+        <ul class="list-unstyled small text-start text-muted mb-0">
+          <li class="mb-2"><i class="bi bi-shield-check text-tt-teal me-2"></i>Password changes apply immediately to new sessions.</li>
+          <li><i class="bi bi-file-earmark-text text-tt-teal me-2"></i>Use the same name as on your government ID for smoother check-in.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

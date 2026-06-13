@@ -1,0 +1,10 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Enquiries{% endblock %}
+{% block content %}
+<form class="mb-3 d-flex gap-2" method="get"><input class="form-control" name="q" placeholder="Name/email"><select class="form-select" name="status"><option value="">Status</option><option>open</option><option>closed</option></select><button class="btn btn-tt-primary">Go</button></form>
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>From</th><th>Type</th><th>Read</th><th></th></tr></thead><tbody>
+{% for e in items %}<tr><td>{{ e.name }}<br><small class="text-muted">{{ e.email }}</small></td><td>{{ e.enquiry_type }}</td><td>{{ e.is_read }}</td><td><a href="{{ url_for('admin.enquiry_detail', eid=e.id) }}">Open</a>
+<form class="d-inline" method="post" action="{{ url_for('admin.enquiry_delete', eid=e.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form>
+</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

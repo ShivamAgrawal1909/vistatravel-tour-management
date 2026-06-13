@@ -1,0 +1,9 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Categories{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between mb-3"><form method="get" class="d-flex gap-2"><input class="form-control" name="q" value="{{ request.args.get('q','') }}"><button class="btn btn-tt-primary">Search</button></form><a class="btn btn-tt-primary" href="{{ url_for('admin.category_form') }}">Add</a></div>
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>Name</th><th>Active</th><th></th></tr></thead><tbody>
+{% for c in items %}<tr><td>{{ c.name }}</td><td>{{ c.is_active }}</td><td><a href="{{ url_for('admin.category_form', cid=c.id) }}">Edit</a>
+<form class="d-inline" method="post" action="{{ url_for('admin.category_delete', cid=c.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

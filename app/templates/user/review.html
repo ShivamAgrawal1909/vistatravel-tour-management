@@ -1,0 +1,61 @@
+{% extends 'base_user.html' %}
+{% block title %}Review · {{ package.title }} · VistaTravel{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item"><a href="{{ url_for('user.bookings') }}">Bookings</a></li>
+<li class="breadcrumb-item active" aria-current="page">Review</li>
+{% endblock %}
+{% block user_page_header %}
+<h1 class="h3 fw-bold text-tt-navy mb-1">Rate your experience</h1>
+<p class="text-muted mb-0">{{ package.title }}</p>
+{% endblock %}
+{% block user_body %}
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="tt-panel">
+      <div class="tt-panel-header">
+        <h2 class="h6 fw-bold text-tt-navy mb-0">Your review</h2>
+        {% if existing and not existing.is_approved %}<span class="badge bg-warning text-dark">Pending moderation</span>{% endif %}
+      </div>
+      <div class="tt-panel-body">
+        {% if not can_review %}
+          <div class="alert alert-warning border-0 small mb-4">
+            <i class="bi bi-lock me-2"></i>Reviews unlock once you have a <strong>confirmed</strong> or <strong>completed</strong> booking for this package. This keeps feedback authentic for other travellers.
+          </div>
+        {% endif %}
+        <form method="post">
+          <label class="form-label small fw-semibold">Overall rating</label>
+          <select class="form-select form-select-lg mb-3" name="rating" {% if not can_review %}disabled{% endif %}>
+            {% for n in range(1,6) %}
+              <option value="{{ n }}" {% if existing and existing.rating == n %}selected{% elif not existing and n == 5 %}selected{% endif %}>{{ n }} — {% if n == 5 %}Excellent{% elif n == 4 %}Very good{% elif n == 3 %}Good{% elif n == 2 %}Fair{% else %}Poor{% endif %}</option>
+            {% endfor %}
+          </select>
+          <label class="form-label small fw-semibold">Written feedback</label>
+          <textarea class="form-control" name="comment" rows="6" placeholder="What stood out? Hotels, guide, pacing, value — specifics help future guests." {% if not can_review %}disabled{% endif %}>{{ existing.comment if existing else '' }}</textarea>
+          <div class="form-text mb-3">Approved reviews appear on the public package page. You can edit or delete your submission while it is pending.</div>
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-tt-primary rounded-pill" {% if not can_review %}disabled{% endif %}><i class="bi bi-star me-1"></i>Save review</button>
+            <a class="btn btn-outline-secondary rounded-pill" href="{{ url_for('public.package_detail', pkg_id=package.id) }}">Back to package</a>
+          </div>
+        </form>
+        {% if existing %}
+          <form class="mt-3 pt-3 border-top" method="post" action="{{ url_for('user.review_delete', rid=existing.id) }}" onsubmit="return confirm('Delete your review permanently?');">
+            <button type="submit" class="btn btn-link text-danger p-0 small"><i class="bi bi-trash me-1"></i>Delete my review</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="tt-panel">
+      <div class="tt-panel-body small tt-prose">
+        <h3 class="h6 fw-bold text-tt-navy">Guidelines</h3>
+        <ul class="mb-0">
+          <li>Focus on your real travel experience.</li>
+          <li>Avoid sharing phone numbers or private deals.</li>
+          <li>Updates resubmit your review for approval.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

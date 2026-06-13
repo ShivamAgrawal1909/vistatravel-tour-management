@@ -1,0 +1,18 @@
+{# expects: request (Flask) #}
+{% set ep = request.endpoint %}
+<nav class="tt-user-nav card-tt border-0 h-100" aria-label="Account navigation">
+  <div class="tt-user-nav-head d-none d-lg-block">
+    <span class="tt-user-nav-label">Your account</span>
+  </div>
+  <ul class="list-unstyled mb-0 py-2 py-lg-0">
+    <li><a class="tt-user-nav-link {% if ep == 'user.dashboard' %}active{% endif %}" href="{{ url_for('user.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Overview</a></li>
+    <li><a class="tt-user-nav-link {% if ep == 'user.profile' %}active{% endif %}" href="{{ url_for('user.profile') }}"><i class="bi bi-person-circle me-2"></i>Profile &amp; details</a></li>
+    <li><a class="tt-user-nav-link {% if ep == 'user.bookings' or ep == 'user.booking_detail' or ep == 'user.booking_receipt' %}active{% endif %}" href="{{ url_for('user.bookings') }}"><i class="bi bi-calendar-check me-2"></i>My bookings</a></li>
+    <li><a class="tt-user-nav-link {% if ep == 'user.wishlist' %}active{% endif %}" href="{{ url_for('user.wishlist') }}"><i class="bi bi-heart me-2"></i>Wishlist</a></li>
+    <li><a class="tt-user-nav-link {% if ep == 'user.enquiries' %}active{% endif %}" href="{{ url_for('user.enquiries') }}"><i class="bi bi-chat-dots me-2"></i>Enquiries</a></li>
+    <li><a class="tt-user-nav-link {% if ep == 'user.change_password' %}active{% endif %}" href="{{ url_for('user.change_password') }}"><i class="bi bi-shield-lock me-2"></i>Password</a></li>
+  </ul>
+  <div class="tt-user-nav-foot border-top mt-2 pt-2 px-3 pb-3 d-none d-lg-block">
+    <a class="btn btn-outline-secondary btn-sm w-100 rounded-pill" href="{{ url_for('public.packages_list') }}"><i class="bi bi-compass me-1"></i>Browse packages</a>
+  </div>
+</nav>

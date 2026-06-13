@@ -1,0 +1,39 @@
+{% extends 'base_public.html' %}
+{% block title %}Sign in · VistaTravel{% endblock %}
+{% block content %}
+<div class="tt-auth-shell">
+  <div class="container">
+    <div class="row justify-content-center align-items-center g-0 tt-auth-card bg-white shadow">
+      <div class="col-lg-5 tt-auth-aside d-none d-lg-flex flex-column justify-content-center">
+        <h1 class="h4 fw-bold mb-3">Welcome back</h1>
+        <p class="small opacity-90 mb-4">Access live booking status, payment history, wishlists, and enquiry threads — the same data our operations team sees on their console.</p>
+        <ul class="small opacity-75 list-unstyled mb-0 vstack gap-2">
+          <li><i class="bi bi-check-circle me-2"></i>Track confirmations &amp; departures</li>
+          <li><i class="bi bi-check-circle me-2"></i>Submit bank transfer proofs securely</li>
+          <li><i class="bi bi-check-circle me-2"></i>Download printable receipts</li>
+        </ul>
+      </div>
+      <div class="col-lg-7 p-4 p-md-5">
+        <h2 class="h4 fw-bold text-tt-navy mb-1">Sign in</h2>
+        <p class="text-muted small mb-4">Use the email address registered on your account.</p>
+        <form method="post">
+          <input type="hidden" name="next" value="{{ next_url or '' }}">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Email</label>
+            <input class="form-control form-control-lg" type="email" name="email" required autocomplete="username">
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Password</label>
+            <input class="form-control form-control-lg" type="password" name="password" required autocomplete="current-password">
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <a class="small text-tt-teal text-decoration-none fw-semibold" href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn-tt-primary btn-lg w-100 rounded-pill">Continue</button>
+        </form>
+        <p class="small text-center text-muted mt-4 mb-0">New to VistaTravel? <a href="{{ url_for('auth.register') }}" class="fw-semibold text-tt-teal text-decoration-none">Create an account</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

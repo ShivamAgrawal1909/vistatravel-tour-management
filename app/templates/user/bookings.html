@@ -1,0 +1,62 @@
+{% extends 'base_user.html' %}
+{% from '_macros.html' import booking_status_badge, payment_status_badge %}
+{% block title %}My bookings · VistaTravel{% endblock %}
+{% block user_bc_extra %}
+<li class="breadcrumb-item active" aria-current="page">Bookings</li>
+{% endblock %}
+{% block user_page_header %}
+<h1 class="h3 fw-bold text-tt-navy mb-1">My bookings</h1>
+<p class="text-muted mb-0">Every reservation is listed with trip date, payment state, and quick actions. Booking reference appears on your receipt.</p>
+{% endblock %}
+{% block user_body %}
+<div class="tt-panel">
+  <div class="tt-panel-header flex-wrap">
+    <h2 class="h6 fw-bold text-tt-navy mb-0">All reservations</h2>
+    <span class="small text-muted">{{ bookings|length }} record{% if bookings|length != 1 %}s{% endif %}</span>
+  </div>
+  <div class="table-responsive">
+    <table class="table tt-data-table mb-0 align-middle">
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Package</th>
+          <th>Booked</th>
+          <th>Travel date</th>
+          <th>Guests</th>
+          <th>Amount</th>
+          <th>Booking</th>
+          <th>Payment</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+          <tr>
+            <td><span class="tt-mono fw-semibold">{{ b.public_id }}</span></td>
+            <td>
+              <div class="fw-semibold text-dark text-truncate" style="max-width:220px">{{ b.package.title if b.package else '—' }}</div>
+              {% if b.package %}<a class="small text-tt-teal text-decoration-none" href="{{ url_for('public.package_detail', pkg_id=b.package.id) }}">View package</a>{% endif %}
+            </td>
+            <td class="small text-muted">{% if b.created_at %}{{ b.created_at.strftime('%d %b %Y') }}{% else %}—{% endif %}</td>
+            <td class="small">{% if b.travel_slot %}<strong>{{ b.travel_slot.travel_date.strftime('%d %b %Y') }}</strong>{% else %}<span class="text-muted">TBC</span>{% endif %}</td>
+            <td class="small">{{ b.travellers_count }}</td>
+            <td class="fw-semibold">₹ {{ '%.2f'|format(b.total_amount|float) }}</td>
+            <td>{{ booking_status_badge(b.status) }}</td>
+            <td>{{ payment_status_badge(b.payment_status) }}</td>
+            <td class="text-nowrap">
+              <a class="btn btn-sm btn-outline-primary rounded-pill py-0" href="{{ url_for('user.booking_detail', booking_id=b.id) }}">Details</a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="9" class="text-center py-5 text-muted">
+              <i class="bi bi-calendar-x d-block fs-2 mb-2 opacity-50"></i>
+              You have no bookings yet. Explore <a href="{{ url_for('public.packages_list') }}">available packages</a> or your <a href="{{ url_for('user.wishlist') }}">wishlist</a>.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

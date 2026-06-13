@@ -1,0 +1,59 @@
+{% extends 'base_admin.html' %}
+{% from '_macros.html' import payment_status_badge %}
+{% block title %}Edit payment{% endblock %}
+{% block page_title %}Edit payment #{{ payment.id }}{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('admin.payments') }}">← Payments</a>
+  <a class="btn btn-sm btn-outline-primary rounded-pill" href="{{ url_for('admin.booking_detail', bid=payment.booking_id) }}">Open booking</a>
+  <a class="btn btn-sm btn-outline-primary rounded-pill" target="_blank" rel="noopener" href="{{ url_for('admin.payment_receipt', pid=payment.id) }}"><i class="bi bi-receipt me-1"></i>Receipt</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.payments') }}">Payments</a></li>
+  <li class="breadcrumb-item active">#{{ payment.id }}</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="admin-card h-100">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Snapshot</h2></div>
+      <div class="admin-card-body small">
+        <p class="mb-2"><span class="text-admin-muted">Recorded</span><br>{{ payment.created_at.strftime('%Y-%m-%d %H:%M') if payment.created_at else '—' }}</p>
+        <p class="mb-2"><span class="text-admin-muted">Booking</span><br>{% if payment.booking %}<a href="{{ url_for('admin.booking_detail', bid=payment.booking_id) }}">{{ payment.booking.public_id }}</a>{% else %}—{% endif %}</p>
+        <p class="mb-0"><span class="text-admin-muted">Current status</span><br>{{ payment_status_badge(payment.status) }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="admin-card">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Edit fields</h2></div>
+      <div class="admin-card-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Amount (₹)</label>
+            <input class="form-control" type="number" step="0.01" name="amount" value="{{ payment.amount }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Mode</label>
+            <select class="form-select" name="mode">{% for m in ['Cash','Bank Transfer','Card'] %}<option value="{{ m }}" {% if payment.mode == m %}selected{% endif %}>{{ m }}</option>{% endfor %}</select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Reference</label>
+            <input class="form-control" name="reference_no" value="{{ payment.reference_no or '' }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Status</label>
+            <select class="form-select" name="status">{% for s in ['pending','paid','partial','failed'] %}<option value="{{ s }}" {% if payment.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-semibold">Internal notes</label>
+            <textarea class="form-control" name="notes" rows="3" placeholder="Optional">{{ payment.notes or '' }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-tt-primary rounded-pill"><i class="bi bi-check2 me-1"></i>Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

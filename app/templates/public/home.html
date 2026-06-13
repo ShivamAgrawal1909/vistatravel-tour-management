@@ -1,0 +1,201 @@
+{% extends 'base_public.html' %}
+{% from '_macros.html' import static_img %}
+{% block title %}{{ site_setting('site_tagline', 'Tour & Travel') }} · VistaTravel{% endblock %}
+{% block content %}
+<section class="hero-section position-relative">
+  <div id="heroCarousel" class="carousel slide carousel-fade w-100 h-100 position-absolute" data-bs-ride="carousel">
+    <div class="carousel-inner h-100">
+      {% for s in sliders %}
+        <div class="carousel-item h-100 {% if loop.first %}active{% endif %}">
+          <img src="{{ static_img(s.image) }}" class="d-block w-100" alt="">
+        </div>
+      {% else %}
+        <div class="carousel-item h-100 active">
+          <img src="{{ url_for('static', filename='img/placeholder.svg') }}" class="d-block w-100" alt="">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="hero-caption">
+    <div class="container py-5">
+      <span class="stat-pill mb-3">{{ site_setting('banner_subtitle', 'Plan smarter. Travel better.') }}</span>
+      <h1 class="display-hero display-4 display-md-3 mb-3">{{ site_setting('site_tagline', 'Premium tour & travel management') }}</h1>
+      <p class="lead text-white-50 col-lg-8 mb-4">Discover hand-picked packages, verified partners, and a booking flow designed for clarity—from first search to final receipt.</p>
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-tt-primary btn-lg" href="{{ url_for('public.packages_list') }}">Browse packages</a>
+        <a class="btn btn-outline-light btn-lg rounded-pill" href="{{ url_for('public.destinations_list') }}">Explore destinations</a>
+      </div>
+      <div class="row g-3 mt-5 col-lg-10">
+        <div class="col-md-4">
+          <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+            <h6 class="text-info mb-1">Operations-ready</h6>
+            <p class="small text-white-50 mb-0">Inventory, dates, and seat caps managed in one place.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+            <h6 class="text-info mb-1">Transparent pricing</h6>
+            <p class="small text-white-50 mb-0">Offers, coupons, and payment tracking without third-party gateways.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="p-3 rounded-4 bg-dark bg-opacity-50 border border-secondary border-opacity-25">
+            <h6 class="text-info mb-1">Guest experience</h6>
+            <p class="small text-white-50 mb-0">Wishlists, reviews, and enquiries connected to real bookings.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  {% if site_setting('show_featured', '1') == '1' and featured_packages %}
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <h2 class="section-title h3 mb-0">{{ site_setting('section_featured_title', 'Featured packages') }}</h2>
+    <a class="btn btn-tt-outline btn-sm" href="{{ url_for('public.packages_list', featured='1') }}">View all</a>
+  </div>
+  <div class="row g-4">
+    {% for p in featured_packages %}
+      <div class="col-md-6 col-lg-4">
+        <div class="card card-tt h-100">
+          <img src="{{ static_img(p.main_image) or url_for('static', filename='img/placeholder.svg') }}" class="card-img-top" alt="">
+          <div class="card-body d-flex flex-column">
+            <span class="badge bg-secondary align-self-start mb-2">{{ p.destination.name if p.destination else '' }}</span>
+            <h5 class="card-title">{{ p.title }}</h5>
+            <p class="card-text text-muted small flex-grow-1">{{ p.duration_days }}D / {{ p.duration_nights }}N · Up to {{ p.max_persons }} guests</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                {% if p.discount_price %}
+                  <span class="fw-bold text-success">₹ {{ '%.0f'|format(p.discount_price|float) }}</span>
+                  <span class="text-muted text-decoration-line-through small ms-1">₹ {{ '%.0f'|format(p.price|float) }}</span>
+                {% else %}
+                  <span class="fw-bold">₹ {{ '%.0f'|format(p.price|float) }}</span>
+                {% endif %}
+              </div>
+              <a class="btn btn-sm btn-tt-primary" href="{{ url_for('public.package_detail', pkg_id=p.id) }}">Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if site_setting('show_destinations', '1') == '1' and destinations %}
+  <div class="mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <h2 class="section-title h3 mb-0">{{ site_setting('section_destinations_title', 'Popular destinations') }}</h2>
+      <a class="btn btn-tt-outline btn-sm" href="{{ url_for('public.destinations_list') }}">All destinations</a>
+    </div>
+    <div class="row g-3">
+      {% for d in destinations %}
+        <div class="col-6 col-md-3">
+          <a href="{{ url_for('public.destination_detail', dest_id=d.id) }}" class="text-decoration-none text-dark">
+            <div class="card card-tt h-100">
+              <img src="{{ static_img(d.image) or url_for('static', filename='img/placeholder.svg') }}" class="card-img-top" alt="" style="height:140px">
+              <div class="card-body py-3">
+                <h6 class="mb-0">{{ d.name }}</h6>
+                <small class="text-muted">{{ d.state }}</small>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if site_setting('show_offers', '1') == '1' and offers %}
+  <div class="mt-5 pt-4">
+    <h2 class="section-title h3 mb-4">{{ site_setting('section_offers_title', 'Current offers') }}</h2>
+    <div class="row g-3">
+      {% for o in offers %}
+        <div class="col-md-4">
+          <div class="card card-tt border border-warning border-opacity-25">
+            <div class="card-body">
+              <h5 class="card-title">{{ o.title }}</h5>
+              <p class="small text-muted mb-2">{{ o.description or '' }}</p>
+              {% if o.discount_percent %}<span class="badge text-bg-warning">{{ o.discount_percent }}% off</span>{% endif %}
+              {% if o.package %}<a class="stretched-link" href="{{ url_for('public.package_detail', pkg_id=o.package.id) }}"></a>{% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if site_setting('show_testimonials', '1') == '1' and testimonials %}
+  <div class="mt-5 pt-4">
+    <h2 class="section-title h3 mb-4">{{ site_setting('section_testimonials_title', 'What travellers say') }}</h2>
+    <div class="row g-3">
+      {% for t in testimonials %}
+        <div class="col-md-4">
+          <div class="card card-tt h-100">
+            <div class="card-body">
+              <p class="mb-3">“{{ t.content }}”</p>
+              <strong>{{ t.customer_name }}</strong>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if site_setting('show_brands', '1') == '1' and brands %}
+  <div class="mt-5 pt-4">
+    <h2 class="section-title h3 mb-4">{{ site_setting('section_brands_title', 'Partner brands') }}</h2>
+    <div class="row g-3 align-items-center">
+      {% for b in brands %}
+        <div class="col-6 col-md-3">
+          <div class="p-3 bg-white rounded-4 shadow-sm text-center h-100">
+            {% if b.logo %}
+              <img src="{{ static_img(b.logo) }}" alt="" style="max-height:48px" class="mb-2">
+            {% endif %}
+            <div class="fw-semibold">{{ b.name }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if site_setting('show_gallery', '1') == '1' and gallery_preview %}
+  <div class="mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <h2 class="section-title h3 mb-0">{{ site_setting('section_gallery_title', 'Gallery') }}</h2>
+      <a class="btn btn-tt-outline btn-sm" href="{{ url_for('public.gallery_page') }}">Full gallery</a>
+    </div>
+    <div class="row g-2">
+      {% for g in gallery_preview %}
+        <div class="col-4 col-md-2"><img src="{{ static_img(g.image_path) }}" class="img-fluid rounded-3 w-100" style="height:100px;object-fit:cover" alt=""></div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if latest_packages %}
+  <div class="mt-5 pt-4">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+      <h2 class="section-title h3 mb-0">Latest packages</h2>
+      <a class="btn btn-tt-outline btn-sm" href="{{ url_for('public.packages_list') }}">View all</a>
+    </div>
+    <div class="row g-4">
+      {% for p in latest_packages %}
+        <div class="col-md-3">
+          <div class="card card-tt h-100">
+            <img src="{{ static_img(p.main_image) or url_for('static', filename='img/placeholder.svg') }}" class="card-img-top" alt="" style="height:160px;object-fit:cover">
+            <div class="card-body">
+              <h6 class="card-title">{{ p.title }}</h6>
+              <a class="btn btn-sm btn-outline-primary w-100" href="{{ url_for('public.package_detail', pkg_id=p.id) }}">View</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

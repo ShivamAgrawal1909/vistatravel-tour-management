@@ -1,0 +1,12 @@
+{% extends 'base_admin.html' %}
+{% block page_title %}Package dates · {{ package.title }}{% endblock %}
+{% block content %}
+<a class="btn btn-tt-primary mb-3" href="{{ url_for('admin.package_date_form', pid=package.id) }}">Add date</a>
+<a class="btn btn-link" href="{{ url_for('admin.packages') }}">Back</a>
+<div class="table-responsive card card-tt"><table class="table mb-0"><thead><tr><th>Date</th><th>Seats</th><th>Closed</th><th></th></tr></thead><tbody>
+{% for d in dates %}<tr><td>{{ d.travel_date }}</td><td>{{ d.seats_available }}</td><td>{{ d.booking_closed }}</td><td>
+<a href="{{ url_for('admin.package_date_form', did=d.id) }}">Edit</a>
+<form class="d-inline" method="post" action="{{ url_for('admin.package_date_delete', did=d.id) }}" onsubmit="return confirm('Delete?')"><button class="btn btn-link btn-sm text-danger p-0">Del</button></form>
+</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

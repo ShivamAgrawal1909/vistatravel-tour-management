@@ -1,0 +1,50 @@
+{% extends 'base_admin.html' %}
+{% block title %}Edit review{% endblock %}
+{% block page_title %}Edit review{% endblock %}
+{% block admin_toolbar %}
+  <a class="btn btn-sm btn-outline-secondary rounded-pill" href="{{ url_for('admin.reviews') }}">← Reviews</a>
+{% endblock %}
+{% block admin_breadcrumbs %}
+<nav class="admin-breadcrumb"><ol class="breadcrumb mb-0">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.reviews') }}">Reviews</a></li>
+  <li class="breadcrumb-item active">#{{ review.id }}</li>
+</ol></nav>
+{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-lg-5">
+    <div class="admin-card h-100">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Context</h2></div>
+      <div class="admin-card-body small">
+        <p class="mb-2"><span class="text-admin-muted">Guest</span><br><strong>{{ review.user.full_name if review.user else '—' }}</strong>{% if review.user %}<br><span class="text-admin-muted">{{ review.user.email }}</span>{% endif %}</p>
+        <p class="mb-2"><span class="text-admin-muted">Package</span><br>{% if review.package %}<a href="{{ url_for('admin.package_form', pid=review.package_id) }}">{{ review.package.title }}</a>{% else %}—{% endif %}</p>
+        <p class="mb-0"><span class="text-admin-muted">Submitted</span><br>{{ review.created_at.strftime('%Y-%m-%d %H:%M') if review.created_at else '—' }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="admin-card">
+      <div class="admin-card-header"><h2 class="h6 mb-0">Moderation &amp; text</h2></div>
+      <div class="admin-card-body">
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Rating (1–5)</label>
+            <select class="form-select" name="rating">
+              {% for n in range(1, 6) %}<option value="{{ n }}" {% if review.rating == n %}selected{% endif %}>{{ n }} star{% if n > 1 %}s{% endif %}</option>{% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Comment</label>
+            <textarea class="form-control" name="comment" rows="6">{{ review.comment or '' }}</textarea>
+          </div>
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <div class="form-check"><input class="form-check-input" type="checkbox" name="is_approved" id="ap" {% if review.is_approved %}checked{% endif %}><label class="form-check-label fw-semibold" for="ap">Approved (show on site)</label></div>
+            <div class="form-check"><input class="form-check-input" type="checkbox" name="is_hidden" id="hi" {% if review.is_hidden %}checked{% endif %}><label class="form-check-label fw-semibold" for="hi">Hidden</label></div>
+          </div>
+          <button type="submit" class="btn btn-tt-primary rounded-pill"><i class="bi bi-check2 me-1"></i>Save review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

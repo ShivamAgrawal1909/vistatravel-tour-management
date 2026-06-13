@@ -1,0 +1,188 @@
+{% extends 'base_public.html' %}
+{% from '_macros.html' import static_img %}
+{% block title %}{{ package.title }} · VistaTravel{% endblock %}
+{% block content %}
+<section class="tt-page-hero">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-3" style="--bs-breadcrumb-divider: '›';">
+        <li class="breadcrumb-item"><a href="{{ url_for('public.home') }}" class="text-white-50 text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('public.packages_list') }}" class="text-white-50 text-decoration-none">Packages</a></li>
+        {% if package.destination %}<li class="breadcrumb-item"><a href="{{ url_for('public.destination_detail', dest_id=package.destination.id) }}" class="text-white-50 text-decoration-none">{{ package.destination.name }}</a></li>{% endif %}
+        <li class="breadcrumb-item active text-white" aria-current="page">{{ package.title[:48] }}{% if package.title|length > 48 %}…{% endif %}</li>
+      </ol>
+    </nav>
+    <div class="row g-4 align-items-end">
+      <div class="col-lg-8">
+        <span class="badge bg-white bg-opacity-25 text-white mb-2">{{ package.destination.name if package.destination else 'Tour' }} · {{ package.category.name if package.category else '' }}</span>
+        <h1 class="display-6 fw-bold mb-2">{{ package.title }}</h1>
+        <p class="tt-page-hero-lead mb-0">
+          {{ package.duration_days }} days / {{ package.duration_nights }} nights · Up to {{ package.max_persons }} guests ·
+          {% if package.brand %}Operated with <strong>{{ package.brand.name }}</strong>{% endif %}
+        </p>
+      </div>
+      <div class="col-lg-4 text-lg-end">
+        {% if avg_rating %}
+          <div class="d-inline-flex align-items-center gap-2 bg-dark bg-opacity-25 rounded-pill px-3 py-2">
+            <span class="text-warning fs-5">★ {{ '%.1f'|format(avg_rating) }}</span>
+            <span class="small text-white-50">Guest rating</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <div class="col-lg-8">
+      <div class="tt-panel mb-4 overflow-hidden p-0 border-0 shadow">
+        <img src="{{ static_img(package.main_image) or url_for('static', filename='img/placeholder.svg') }}" class="w-100" alt="" style="max-height:420px;object-fit:cover">
+        {% if package.images.first() %}
+          <div class="row g-0 border-top bg-light">
+            {% for im in package.images %}
+              <div class="col-3 col-md-2"><img src="{{ static_img(im.image_path) }}" class="w-100" style="height:72px;object-fit:cover" alt=""></div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <ul class="nav nav-tabs nav-tabs-tt" role="tablist">
+        <li class="nav-item"><button type="button" class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-overview"><i class="bi bi-info-circle me-1 d-none d-sm-inline"></i>Overview</button></li>
+        <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-itinerary"><i class="bi bi-list-ol me-1 d-none d-sm-inline"></i>Itinerary</button></li>
+        <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-inc"><i class="bi bi-check2-circle me-1 d-none d-sm-inline"></i>Inclusions</button></li>
+        <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-dates"><i class="bi bi-calendar3 me-1 d-none d-sm-inline"></i>Dates</button></li>
+        <li class="nav-item"><button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-rev"><i class="bi bi-star me-1 d-none d-sm-inline"></i>Reviews</button></li>
+      </ul>
+      <div class="tab-content border border-top-0 rounded-bottom-4 bg-white p-4 p-lg-4 shadow-sm">
+        <div class="tab-pane fade show active tt-prose" id="tab-overview">
+          <h2 class="h5 fw-bold text-tt-navy">Experience overview</h2>
+          <p>{{ package.hotel_details_text or 'Detailed day-by-day highlights are listed under Itinerary. Our team confirms final hotels subject to availability at booking.' }}</p>
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <h3 class="h6 text-tt-teal"><i class="bi bi-cup-hot me-2"></i>Meals</h3>
+              <p class="mb-0">{{ package.meal_details or 'As per plan — see inclusions for specifics.' }}</p>
+            </div>
+            <div class="col-md-6">
+              <h3 class="h6 text-tt-teal"><i class="bi bi-bus-front me-2"></i>Transport</h3>
+              <p class="mb-0">{{ package.transport_details_text or 'Comfortable surface transport as per route.' }}</p>
+            </div>
+          </div>
+          {% if package.hotel %}
+            <hr>
+            <h3 class="h6 fw-bold">Featured stay</h3>
+            <p class="mb-1"><strong>{{ package.hotel.name }}</strong> — {{ package.hotel.hotel_type or '' }} · {{ package.hotel.location or '' }}</p>
+            <p class="small text-muted mb-0">{{ package.hotel.description or '' }}</p>
+          {% endif %}
+          {% if package.transport %}
+            <hr>
+            <h3 class="h6 fw-bold">Vehicle plan</h3>
+            <p class="mb-0">{{ package.transport.transport_type }} · Capacity {{ package.transport.seat_capacity }} seats{% if package.transport.pickup_point %} · Pickup: {{ package.transport.pickup_point }}{% endif %}</p>
+          {% endif %}
+          {% if package.terms %}
+            <hr>
+            <h3 class="h6 fw-bold">Terms snapshot</h3>
+            <p class="small text-muted mb-0">{{ package.terms }}</p>
+          {% endif %}
+        </div>
+        <div class="tab-pane fade" id="tab-itinerary">
+          <div class="vstack gap-3">
+            {% for row in itinerary %}
+              <div class="d-flex gap-3 p-3 rounded-3 border bg-light bg-opacity-50">
+                <div class="flex-shrink-0 text-center rounded-3 bg-white shadow-sm px-3 py-2" style="min-width:4.5rem">
+                  <div class="small text-muted text-uppercase fw-bold">Day</div>
+                  <div class="fs-4 fw-bold text-tt-teal">{{ row.day }}</div>
+                </div>
+                <div>
+                  <h3 class="h6 fw-bold mb-1">{{ row.title }}</h3>
+                  <p class="mb-0 small text-muted">{{ row.description }}</p>
+                </div>
+              </div>
+            {% else %}
+              <p class="text-muted mb-0">Full itinerary will be published shortly. Enquire for a PDF outline.</p>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab-inc">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h3 class="h6 fw-bold text-success mb-3"><i class="bi bi-plus-circle me-2"></i>Inclusions</h3>
+              <pre class="small bg-light rounded-3 p-3 border mb-0 tt-prose" style="white-space:pre-wrap;font-family:inherit">{{ package.inclusions or '—' }}</pre>
+            </div>
+            <div class="col-md-6">
+              <h3 class="h6 fw-bold text-danger mb-3"><i class="bi bi-dash-circle me-2"></i>Exclusions</h3>
+              <pre class="small bg-light rounded-3 p-3 border mb-0 tt-prose" style="white-space:pre-wrap;font-family:inherit">{{ package.exclusions or '—' }}</pre>
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tab-dates">
+          <p class="small text-muted">Departures with remaining seats. Dates close automatically when sold out or blocked by operations.</p>
+          <ul class="list-group list-group-flush rounded-3 border">
+            {% for d in available_dates %}
+              <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                <span><i class="bi bi-calendar-event text-tt-teal me-2"></i><strong>{{ d.travel_date.strftime('%A, %d %B %Y') }}</strong></span>
+                <span class="badge bg-success rounded-pill">{{ d.seats_available }} seats left</span>
+              </li>
+            {% else %}
+              <li class="list-group-item text-muted py-4 text-center">No open departures right now — join the wishlist or contact us for private batches.</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="tab-pane fade" id="tab-rev">
+          {% for r in reviews %}
+            <div class="border-bottom pb-3 mb-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <strong>{{ r.user.full_name if r.user else 'Verified traveller' }}</strong>
+                <span class="text-warning">{{ r.rating }}★</span>
+              </div>
+              <p class="mb-0 small tt-prose">{{ r.comment }}</p>
+              <small class="text-muted">{% if r.created_at %}{{ r.created_at.strftime('%d %b %Y') }}{% endif %}</small>
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">Be the first to review after your trip — feedback shapes our partner scorecards.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="tt-panel border-0 shadow position-sticky" style="top:96px;z-index:10">
+        <div class="tt-panel-body">
+          <div class="mb-3">
+            {% if package.discount_price %}
+              <div class="d-flex align-items-baseline gap-2 flex-wrap">
+                <span class="display-6 fw-bold text-success">₹ {{ package.discount_price }}</span>
+                <span class="text-muted text-decoration-line-through">₹ {{ package.price }}</span>
+              </div>
+              <p class="small text-muted mb-0">Per person indicative · taxes &amp; surcharges as applicable at invoice</p>
+            {% else %}
+              <span class="display-6 fw-bold text-tt-navy">₹ {{ package.price }}</span>
+              <p class="small text-muted mb-0">Per person indicative</p>
+            {% endif %}
+          </div>
+          <hr>
+          <dl class="tt-dl small mb-3">
+            <dt>Route</dt>
+            <dd>{{ package.start_point or '—' }} → {{ package.end_point or '—' }}</dd>
+            <dt>Duration</dt>
+            <dd>{{ package.duration_days }}D / {{ package.duration_nights }}N</dd>
+            <dt>Group size cap</dt>
+            <dd>{{ package.max_persons }} travellers</dd>
+          </dl>
+          <div class="d-grid gap-2">
+            {% if session.user_id %}
+              <a class="btn btn-tt-primary btn-lg rounded-pill" href="{{ url_for('public.book_package', pkg_id=package.id) }}"><i class="bi bi-calendar-check me-2"></i>Book this package</a>
+              <form action="{{ url_for('user.wishlist_add', pkg_id=package.id) }}" method="post"><button type="submit" class="btn btn-outline-secondary rounded-pill w-100"><i class="bi bi-heart me-2"></i>Save to wishlist</button></form>
+              <a class="btn btn-outline-primary rounded-pill" href="{{ url_for('public.package_enquiry', pkg_id=package.id) }}"><i class="bi bi-chat-dots me-2"></i>Ask a question</a>
+              <a class="btn btn-link btn-sm text-secondary" href="{{ url_for('user.review_package', pkg_id=package.id) }}">Write a review</a>
+            {% else %}
+              <a class="btn btn-tt-primary btn-lg rounded-pill" href="{{ url_for('auth.user_login', next=request.path) }}"><i class="bi bi-box-arrow-in-right me-2"></i>Sign in to book</a>
+              <p class="small text-muted text-center mb-0">New here? <a href="{{ url_for('auth.register') }}">Create a free account</a> to save wishlists and track payments.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
