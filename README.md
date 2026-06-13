@@ -244,15 +244,5 @@ gunicorn -w 4 -b 0.0.0.0:8000 "run:app"
 
 ---
 
-## Security notes
-
-- Replace default **`SECRET_KEY`** and all **default passwords** before any public deployment.
-- Run the app behind HTTPS in production.
-- Restrict MySQL user permissions to the application database only.
-- The seed script is **destructive**; never run it against production data.
-
----
-
 ## License
-
-Use and modify according to your project needs; add a license file if you distribute the code.
+This project is for educational and portfolio purposes only.
