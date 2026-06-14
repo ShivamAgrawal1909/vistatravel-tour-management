@@ -16,10 +16,18 @@
       {% endfor %}
     </div>
   </div>
-  <div class="hero-caption">
+  
+  <div class="hero-caption" style="z-index: 5; position: relative;">
     <div class="container py-5">
-      <span class="stat-pill mb-3">{{ site_setting('banner_subtitle', 'Plan smarter. Travel better.') }}</span>
-      <h1 class="display-hero display-4 display-md-3 mb-3">{{ site_setting('site_tagline', 'Premium tour & travel management') }}</h1>
+      
+      <span class="stat-pill mb-3">
+        {% if sliders and sliders[0].subtitle %}{{ sliders[0].subtitle }}{% else %}{{ site_setting('banner_subtitle', 'Plan smarter. Travel better.') }}{% endif %}
+      </span>
+      
+      <h1 class="display-hero display-4 display-md-3 mb-3">
+        {% if sliders and sliders[0].title %}{{ sliders[0].title }}{% else %}{{ site_setting('site_tagline', 'Premium tour & travel management') }}{% endif %}
+      </h1>
+      
       <p class="lead text-white-50 col-lg-8 mb-4">Discover hand-picked packages, verified partners, and a booking flow designed for clarity—from first search to final receipt.</p>
       <div class="d-flex flex-wrap gap-2">
         <a class="btn btn-tt-primary btn-lg" href="{{ url_for('public.packages_list') }}">Browse packages</a>
