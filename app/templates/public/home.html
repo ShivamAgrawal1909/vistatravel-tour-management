@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 2; background: linear-gradient(90deg, rgba(11,28,30,0.9) 0%, rgba(11,28,30,0.6) 50%, rgba(0,0,0,0) 100%); pointer-events: none;"></div>
+  <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 2; background: linear-gradient(90deg, rgba(11,28,30,0.95) 0%, rgba(11,28,30,0.75) 45%, rgba(0,0,0,0.1) 100%; pointer-events: none;"></div>
 
   <div class="hero-caption position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="z-index: 3; pointer-events: none;">
     <div class="container" style="pointer-events: auto;">
@@ -30,11 +30,11 @@
             {% if sliders and sliders[0].subtitle %}{{ sliders[0].subtitle }}{% else %}{{ site_setting('banner_subtitle', 'Plan smarter. Travel better.') }}{% endif %}
           </span>
           
-          <h1 class="display-4 fw-bold mb-3 text-white" style="line-height: 1.2; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">
+          <h1 class="display-4 fw-bold mb-3 text-white" style="line-height: 1.2; text-shadow: 2px 4px 16px rgba(0,0,0,0.8);">
             {% if sliders and sliders[0].title %}{{ sliders[0].title }}{% else %}{{ site_setting('site_tagline', 'Premium tour & travel management') }}{% endif %}
           </h1>
           
-          <p class="lead mb-4 text-white-50 fs-5" style="max-width: 520px;">
+          <p class="lead mb-4 text-white fs-5" style="max-width: 520px;">
             Discover hand-picked packages, verified partners, and a booking flow designed for clarity—from first search to final receipt.
           </p>
           
