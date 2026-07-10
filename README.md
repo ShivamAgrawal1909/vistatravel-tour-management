@@ -199,7 +199,6 @@ python seed_data.py
 |--------|--------|
 | **URL** | http://127.0.0.1:5000/admin/login |
 | **Username** | `admin` |
-| **Password** | `admin123` |
 | **Email (also accepted as login)** | `admin@tourtravel.com` |
 
 ### Demo customers (after seed)
